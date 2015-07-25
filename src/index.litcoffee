@@ -57,24 +57,25 @@ Get and set the status of the lights
 
     getStatus = (cb=log) ->
         log 'Getting Status'
-        lifx.listLights 'all', log
+        lifx.listLights 'all', cb
 
 Turn the lights on or off
 
-    power = (selector, state, duration=1.0) ->
+    power = (selector, state, duration=1.0, cb=log) ->
         if (selector == '')
             selector = "all"
         if (state == undefined)
             log 'toggling bulbs'
-            lifx.togglePower selector, log
+            lifx.togglePower selector, cb
         else
             log "turning bulbs ", state
-            lifx.setPower selector, state, duration, log
+            lifx.setPower selector, state, duration, cb
 
 Set a property of a bulb
 
-    setProp = (col, sel="all", dur=1.0, power=true, cb=log) ->
-        lifx.setColor sel, col, dur, power, cb
+    setProp = (prop, sel="all", dur=1.0, power=true, cb=log) ->
+        log 'Setting bulb(s) ' + sel + ' to state ' + prop
+        lifx.setColor sel, prop, dur, power, cb
 
 ## Putting all the logic together
 
