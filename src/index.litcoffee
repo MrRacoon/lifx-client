@@ -119,4 +119,45 @@ Set attributes light color, brightness, etc...
     if !(o.brightness == undefined)
         setProp 'brightness:' + o.brightness
 
+## State modifications
+
+Below are high level interfaces to modify the current state by slight
+differences. For instance, turning up the current brightness as opposed to
+setting it to a specific value.
+
+```json
+[
+  {
+      "id": "d3b2f2d97452",
+      "uuid": "8fa5f072-af97-44ed-ae54-e70fd7bd9d20",
+      "label": "Left Lamp",
+      "connected": true,
+      "power": "on",
+      "color": {
+            "hue": 250.0,
+            "saturation": 0.5,
+            "kelvin": 3500
+          },
+      "brightness": 0.5,
+      "group": {
+            "id": "1c8de82b81f445e7cfaafae49b259c71",
+            "name": "Lounge"
+          },
+      "location": {
+            "id": "1d6fe8ef0fde4c6d77b0012dc736662c",
+            "name": "Home"
+          },
+      "last_seen": "2015-03-02T08:53:02.867+00:00",
+      "seconds_since_seen": 0.002869418
+    }
+]
+
+```
+    modify (func) ->
+        getStatus(func)
+
+
+
+
+
 
