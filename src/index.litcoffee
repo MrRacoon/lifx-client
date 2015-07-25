@@ -82,7 +82,7 @@ Set a property of a bulb
 Toggle the lights on/off
 
     if ! (o.toggle == undefined)
-        power o.toggle, undefined
+        power o.toggle
 
 Power the lights on
 
