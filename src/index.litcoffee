@@ -8,7 +8,7 @@ Create the lifx object
 Get the token
 
     fs = require 'fs'
-    fileContents = fs.readFileSync 'lifx_token'
+    fileContents = fs.readFileSync '~/.lifx_token'
     tokenObj = JSON.parse fileContents
     token = tokenObj.token
     console.log 'token is: ', token
