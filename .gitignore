@@ -1,3 +1,4 @@
 node_modules/*
 lifx_token
 dist/*
+*.swp
