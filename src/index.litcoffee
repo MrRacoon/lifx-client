@@ -9,7 +9,7 @@ Alias for the `console.log` function
 
     log = console.log
 
-Command Line Argument Parsing
+## Command Line Argument Parsing
 
     args = process.argv
     log args
@@ -17,6 +17,7 @@ Command Line Argument Parsing
     opts = require 'node-getopt'
         .create [
             ['t' ,  'token=ARG'      ,  'the token in plainText'],
+            [''  ,  'toggle[=ARG]'   ,  'toggle the power of the bulbs'],
             [''  ,  'on[=SELECTOR]'  ,  'turn on the lights'],
             [''  ,  'off[=ARG]'      ,  'turn off the lights'],
             ['s' ,  'status'         ,  'show the status of the lights'],
@@ -26,6 +27,8 @@ Command Line Argument Parsing
             [''  ,  'kelvin=ARG'     ,  'set kelvin (2500-9000)'],
             [''  ,  'brightness=ARG' ,  'set brightness (0.0-1.0)'],
             [''  ,  'saturation=ARG' ,  'set saturation (0.0-1.0)'],
+            [''  ,  'bright+'        ,  'increase the brightness'],
+            [''  ,  'bright-'        ,  'decrease the brightness'],
             ['h' ,  'help'           ,  'display this help']
         ]
         .bindHelp()
@@ -36,7 +39,7 @@ Command Line Argument Parsing
     o = opts.options
 
 
-Get the token
+## Getting the token
 
     if (opts.options.token)
         token = opts.options.token
@@ -54,76 +57,73 @@ Initialize it with the token
 
     lifx = new lifxObj token
 
-# Handy functions
+## Handy functions
 
 Get and set the status of the lights
 
-    getStatus = () ->
+    getStatus = (cb=log) ->
         log 'Getting Status'
-        lifx.listLights 'all', (body) ->
-            log body
+        lifx.listLights 'all', log
 
 Turn the lights on or off
 
-    power = (st, dur, sel) ->
-        selector = sel || "all"
-        state    = st ? "on" : "off"
-        log "turning bulbs ", state
-        lifx.setPower selector, state, dur, log
-
-Turn the bulbs on
-
-    powerOn = (dur) ->
-        power "on", dur, opts.options.on
-
-Turn the bulbs off 
-
-    powerOff = (dur) ->
-        power "off", dur, opts.options.off
+    power = (selector, state, duration=1.0) ->
+        log 'selector is: ', selector
+        if (selector == '')
+            selector = "all"
+        log 'selector is: ', selector
+        if (state == undefined)
+            log 'toggling bulbs'
+            lifx.togglePower selector, log
+        else
+            log "turning bulbs ", state
+            lifx.setPower selector, state, duration, log
 
 Set a property of a bulb
 
-    setColor = (col, sel="all", dur=1.0, power=false) ->
+    setProp = (col, sel="all", dur=1.0, power=false) ->
         lifx.setColor sel, col, dur, power, log
-
-
-
 
 ## Putting all the logic together
 
+Toggle the lights on/off
+
+    if ! (o.toggle == undefined)
+        power o.toggle, undefined
 
 Power the lights on
 
-    if ! (opts.options.on == undefined)
-        powerOn(1.0)
+    if ! (o.on == undefined)
+        power o.on, "on"
 
 Power the lights off
 
-    if ! (opts.options.off == undefined)
-        powerOff(1.0)
+    if ! (o.off == undefined)
+        power o.off, "off"
 
 Get the status of the lights
 
-    if ! (opts.options.status == undefined)
+    if ! (o.status == undefined)
         getStatus()
 
 Set attributes light color, brightness, etc... 
 
     if !(o.color == undefined)
-        setColor o.color
+        setProp o.color
 
     if !(o.hue == undefined)
-        setColor 'hue:' + o.hue
+        setProp 'hue:' + o.hue
 
     if !(o.rgb == undefined)
-        setColor '#' + o.rgb
+        setProp '#' + o.rgb
 
     if !(o.saturation == undefined)
-        setColor 'saturation:' + o.saturation
+        setProp 'saturation:' + o.saturation
 
     if !(o.kelvin == undefined)
-        setColor 'kelvin:' + o.kelvin
+        setProp 'kelvin:' + o.kelvin
 
     if !(o.brightness == undefined)
-        setColor 'brightness:' + o.brightness
+        setProp 'brightness:' + o.brightness
+
 
