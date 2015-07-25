@@ -11,9 +11,6 @@ Alias for the `console.log` function
 
 ## Command Line Argument Parsing
 
-    args = process.argv
-    log args
-
     opts = require 'node-getopt'
         .create [
             ['t' ,  'token=ARG'      ,  'the token in plainText'],
@@ -34,10 +31,10 @@ Alias for the `console.log` function
         .bindHelp()
         .parseSystem()
 
-    log opts
+
+make an alias to the options for convinience
 
     o = opts.options
-
 
 ## Getting the token
 
@@ -49,9 +46,6 @@ Alias for the `console.log` function
         fileContents = fs.readFileSync (home + '/.lifx_token')
         tokenObj     = JSON.parse fileContents
         token        = tokenObj.token
-
-
-    console.log 'token is: ', token
 
 Initialize it with the token
 
@@ -68,10 +62,8 @@ Get and set the status of the lights
 Turn the lights on or off
 
     power = (selector, state, duration=1.0) ->
-        log 'selector is: ', selector
         if (selector == '')
             selector = "all"
-        log 'selector is: ', selector
         if (state == undefined)
             log 'toggling bulbs'
             lifx.togglePower selector, log
@@ -81,8 +73,8 @@ Turn the lights on or off
 
 Set a property of a bulb
 
-    setProp = (col, sel="all", dur=1.0, power=false) ->
-        lifx.setColor sel, col, dur, power, log
+    setProp = (col, sel="all", dur=1.0, power=true, cb=log) ->
+        lifx.setColor sel, col, dur, power, cb
 
 ## Putting all the logic together
 
