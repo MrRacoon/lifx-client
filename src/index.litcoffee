@@ -24,8 +24,8 @@ Alias for the `console.log` function
             [''  ,  'kelvin=ARG'     ,  'set kelvin (2500-9000)'],
             [''  ,  'brightness=ARG' ,  'set brightness (0.0-1.0)'],
             [''  ,  'saturation=ARG' ,  'set saturation (0.0-1.0)'],
-            [''  ,  'bright+'        ,  'increase the brightness'],
-            [''  ,  'bright-'        ,  'decrease the brightness'],
+            [''  ,  'brightUp'       ,  'increase the brightness'],
+            [''  ,  'brightDown'     ,  'decrease the brightness'],
             ['h' ,  'help'           ,  'display this help']
         ]
         .bindHelp()
@@ -35,6 +35,8 @@ Alias for the `console.log` function
 make an alias to the options for convinience
 
     o = opts.options
+
+    log o
 
 ## Getting the token
 
@@ -77,6 +79,11 @@ Set a property of a bulb
         log 'Setting bulb(s) ' + sel + ' to state ' + prop
         lifx.setColor sel, prop, dur, power, cb
 
+    setcolor = setProp
+
+    setBrightness = (prop, sel="all", dur=1.0, power=true, cb=log) ->
+        setProp ('brightness:' + prop), sel, dur, power, cb
+
 ## Putting all the logic together
 
 Toggle the lights on/off
@@ -117,13 +124,16 @@ Set attributes light color, brightness, etc...
         setProp 'kelvin:' + o.kelvin
 
     if !(o.brightness == undefined)
-        setProp 'brightness:' + o.brightness
+        setBrightness o.brightness
 
 ## State modifications
 
 Below are high level interfaces to modify the current state by slight
 differences. For instance, turning up the current brightness as opposed to
 setting it to a specific value.
+
+The payload from `getStatus` returns the following list of objects denoting a
+bulbs current state:
 
 ```json
 [
@@ -153,11 +163,42 @@ setting it to a specific value.
 ]
 
 ```
-    modify (func) ->
-        getStatus(func)
+
+We first wrap get status with a higher order function to modify this payload.
+We will expect that functions passed into it expect one bulb entry at a time.
+
+    modify = (func) ->
+        getStatus (payload) ->
+            arr = JSON.parse payload
+            arr.forEach(func)
 
 
+    changeBrightness = (step) ->
+        (bulb) ->
+            id  = bulb.id
+            log 'id', id
+
+            cur = bulb.brightness
+            log 'cur', cur
+
+            nex = cur + step
+            log 'nex', nex
+
+            if (nex < 1.0 && nex > 0.0)
+                setBrightness nex, id
+            else if (step > 0)
+                setBrightness 1.0, id
+            else
+                setBrightness 0.0, id
 
 
+    increaseBrightness = changeBrightness(0.1)
+    decreaseBrightness = changeBrightness(-0.1)
+
+    if !(o.brightUp == undefined)
+        modify increaseBrightness
+
+    if !(o.brightDown == undefined)
+        modify decreaseBrightness
 
 
