@@ -5,6 +5,28 @@ Create the lifx object
 
     lifxObj = require 'lifx-api'
 
+Alias for the `console.log` function
+
+    log = console.log
+
+Command Line Argument Parsing
+
+    args = process.argv
+    log args
+
+    opts = require 'node-getopt'
+        .create [
+            ['t', 'token', 'the token in plainText'],
+            ['j', 'token-json', 'the token in json format'],
+            ['h', 'help', 'display this help']
+        ]
+        .bindHelp()
+        .parseSystem()
+
+    log opts
+    opts.errorFunc()
+
+
 Get the token
 
     fs           = require 'fs'
@@ -25,10 +47,6 @@ Initialize it with the token
 Hold the lights in state
 
     lights = {}
-
-Alias for the `console.log` function
-
-    log = console.log
 
 log out the lights statuses
 
