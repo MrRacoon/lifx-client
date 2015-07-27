@@ -26,6 +26,10 @@ Alias for the `console.log` function
             [''  ,  'saturation=ARG' ,  'set saturation (0.0-1.0)'],
             [''  ,  'brightUp'       ,  'increase the brightness'],
             [''  ,  'brightDown'     ,  'decrease the brightness'],
+            [''  ,  'kelvinUp'       ,  'increase the kelvin'],
+            [''  ,  'kelvinDown'     ,  'decrease the kelvin'],
+            [''  ,  'saturationUp'   ,  'increase the saturation'],
+            [''  ,  'saturationDown' ,  'decrease the saturation'],
             ['h' ,  'help'           ,  'display this help']
         ]
         .bindHelp()
@@ -84,6 +88,12 @@ Set a property of a bulb
     setBrightness = (prop, sel="all", dur=1.0, power=true, cb=log) ->
         setProp ('brightness:' + prop), sel, dur, power, cb
 
+    setKelvin = (prop, sel="all", dur=1.0, power=true, cb=log) ->
+        setProp ('kelvin:' + prop), sel, dur, power, cb
+
+    setSaturation = (prop, sel="all", dur=1.0, power=true, cb=log) ->
+        setProp ('saturation:' + prop), sel, dur, power, cb
+
 ## Putting all the logic together
 
 Toggle the lights on/off
@@ -109,7 +119,7 @@ Get the status of the lights
 Set attributes light color, brightness, etc... 
 
     if !(o.color == undefined)
-        setProp o.color
+        setColor o.color
 
     if !(o.hue == undefined)
         setProp 'hue:' + o.hue
@@ -118,10 +128,10 @@ Set attributes light color, brightness, etc...
         setProp '#' + o.rgb
 
     if !(o.saturation == undefined)
-        setProp 'saturation:' + o.saturation
+        setSaturation o.saturation
 
     if !(o.kelvin == undefined)
-        setProp 'kelvin:' + o.kelvin
+        setKelvin o.kelvin
 
     if !(o.brightness == undefined)
         setBrightness o.brightness
@@ -164,6 +174,8 @@ bulbs current state:
 
 ```
 
+Couple functions to get information from a bulb, will come into play later
+
 We first wrap get status with a higher order function to modify this payload.
 We will expect that functions passed into it expect one bulb entry at a time.
 
@@ -172,33 +184,100 @@ We will expect that functions passed into it expect one bulb entry at a time.
             arr = JSON.parse payload
             arr.forEach(func)
 
-
-    changeBrightness = (step) ->
+    changeAttribute = (config, isAdd) ->
         (bulb) ->
             id  = bulb.id
-            log 'id', id
+            cur = config.current
 
-            cur = bulb.brightness
-            log 'cur', cur
-
-            nex = cur + step
-            log 'nex', nex
-
-            if (nex < 1.0 && nex > 0.0)
-                setBrightness nex, id
-            else if (step > 0)
-                setBrightness 1.0, id
+            if (isAdd)
+                stp = config.step
             else
-                setBrightness 0.0, id
+                stp = 0-config.step
 
+            nex = cur + stp
 
-    increaseBrightness = changeBrightness(0.1)
-    decreaseBrightness = changeBrightness(-0.1)
+            if (nex < config.max && nex > config.min)
+                config.change nex, id
+            else if (config.step > 0)
+                log 'Hit Maximum bound'
+                config.change 1.0, id
+            else
+                log 'Hit Minimum bound'
+                config.change 0.0, id
 
-    if !(o.brightUp == undefined)
+Brightness adjustments
+
+    getBrightness = (bulb) -> bulb.brightness
+
+    brightnessAdjustments =
+        change : setBrightness
+        current: getBrightness
+        step   : 0.1
+        min    : 0.0
+        max    : 1.0
+
+    if o.brightnessUp
+        increaseBrightness = changeAttribute brightnessAdjustments, true
         modify increaseBrightness
 
-    if !(o.brightDown == undefined)
+    if o.brightnessDown
+        decreaseBrightness = changeAttribute brightnessAdjustments, false
         modify decreaseBrightness
 
+Kelvin adjustments
+
+    getKelvin = (bulb) -> bulb.color.kelvin
+
+    kelvinAdjustments =
+        change : setKelvin
+        current: getKelvin
+        step   : 500
+        min    : 2500
+        max    : 9000
+
+    if o.kelvinUp
+        increaseKelvin = changeAttribute kelvinAdjustments, true
+        modify increaseKelvin
+
+    if o.kelvinDown
+        decreaseKelvin = changeAttribute kelvinAdjustments, false
+        modify decreaseKelvin
+
+Hue adjustments
+
+    getHue = (bulb) -> bulb.color.hue
+
+    hueAdjustments =
+        change : setHue
+        current: getHue
+        step   : 45
+        min    : 0
+        max    : 360
+
+    if o.hueUp
+        increaseHue = changeAttribute hueAdjustments, true
+        modify increaseHue
+
+    if o.hueDown
+        decreaseHue = changeAttribute hueAdjustments, false
+        modify decreaseHue
+
+Saturation adjustments
+
+    getSaturation = (bulb) -> bulb.color.saturation
+
+    saturationAdjustments =
+        change : setSaturation
+        current: getSaturation
+        step   : 500
+        min    : 2500
+        max    : 9000
+
+    if o.saturationUp
+        increaseSaturation = changeAttribute saturationAdjustments, true
+        modify increaseSaturation
+
+    if o.saturationDown
+        decreaseSaturation = changeAttribute saturationAdjustments, false
+        modify decreaseSaturation
 
