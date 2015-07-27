@@ -62,7 +62,7 @@ Initialize it with the token
 Get and set the status of the lights
 
     getStatus = (cb=log) ->
-        log 'Getting Status'
+        log "Getting Status"
         lifx.listLights 'all', cb
 
 Turn the lights on or off
@@ -71,28 +71,28 @@ Turn the lights on or off
         if (selector == '')
             selector = "all"
         if (state == undefined)
-            log 'toggling bulbs'
+            log "toggling bulbs"
             lifx.togglePower selector, cb
         else
-            log "turning bulbs ", state
+            log "turning bulbs #{state}"
             lifx.setPower selector, state, duration, cb
 
 Set a property of a bulb
 
     setProp = (prop, sel="all", dur=1.0, power=true, cb=log) ->
-        log 'Setting bulb(s) ' + sel + ' to state ' + prop
+        log "Setting bulb(s) #{sel} to state #{prop}"
         lifx.setColor sel, prop, dur, power, cb
 
     setcolor = setProp
 
     setBrightness = (prop, sel="all", dur=1.0, power=true, cb=log) ->
-        setProp ('brightness:' + prop), sel, dur, power, cb
+        setProp "brightness:#{prop}", sel, dur, power, cb
 
     setKelvin = (prop, sel="all", dur=1.0, power=true, cb=log) ->
-        setProp ('kelvin:' + prop), sel, dur, power, cb
+        setProp "kelvin:#{prop}", sel, dur, power, cb
 
     setSaturation = (prop, sel="all", dur=1.0, power=true, cb=log) ->
-        setProp ('saturation:' + prop), sel, dur, power, cb
+        setProp "saturation:#{prop}", sel, dur, power, cb
 
 ## Putting all the logic together
 
@@ -122,10 +122,10 @@ Set attributes light color, brightness, etc...
         setColor o.color
 
     if !(o.hue == undefined)
-        setProp 'hue:' + o.hue
+        setProp "hue:#{o.hue}"
 
     if !(o.rgb == undefined)
-        setProp '#' + o.rgb
+        setProp "##{o.rgb}"
 
     if !(o.saturation == undefined)
         setSaturation o.saturation
@@ -199,10 +199,10 @@ We will expect that functions passed into it expect one bulb entry at a time.
             if (nex < config.max && nex > config.min)
                 config.change nex, id
             else if (config.step > 0)
-                log 'Hit Maximum bound'
+                log "Hit Maximum bound"
                 config.change 1.0, id
             else
-                log 'Hit Minimum bound'
+                log "Hit Minimum bound"
                 config.change 0.0, id
 
 Brightness adjustments
