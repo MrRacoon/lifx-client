@@ -95,7 +95,9 @@ the file was the raw token and clean it up a bit.
             tokenObj = JSON.parse fileContents
             token    = tokenObj.token
         catch e
-            token    = fileContents.replace /\r?\n|\r/, ''
+            token    = fileContents
+                .replace /\r?\n|\r/, ''
+                .replace /\w/, ''
 
 Finally, initialize the lifx object wit our token. Now we are ready to send out
 some instructions!
