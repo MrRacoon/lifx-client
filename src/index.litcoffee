@@ -226,10 +226,10 @@ We will expect that functions passed into it expect one bulb entry at a time.
                 config.change nex, id
             else if (stp > 0)
                 log "Hit Maximum bound"
-                config.change 1.0, id
+                config.change config.max, id
             else
                 log "Hit Minimum bound"
-                config.change 0.0, id
+                config.change config.min, id
 
 Brightness adjustments
 
