@@ -5,9 +5,21 @@ Create the lifx object
 
     lifxObj = require 'lifx-api'
 
+Require the fs library for file handling
+
+    fs      = require 'fs'
+
 Alias for the `console.log` function
 
-    log = console.log
+    writeToLogFile = (args...) ->
+        logFile = '/tmp/lifx-cli.log'
+        fs.appendFile logFile, args.concat(['\n']).join(' ')
+
+
+    log = (args...) ->
+        addTime = [new Date()].concat(args)
+        writeToLogFile addTime
+        console.log.apply null, addTime
 
 ## Command Line Argument Parsing
 
@@ -24,8 +36,8 @@ Alias for the `console.log` function
             [''  ,  'kelvin=ARG'     ,  'set kelvin (2500-9000)'],
             [''  ,  'brightness=ARG' ,  'set brightness (0.0-1.0)'],
             [''  ,  'saturation=ARG' ,  'set saturation (0.0-1.0)'],
-            [''  ,  'brightUp'       ,  'increase the brightness'],
-            [''  ,  'brightDown'     ,  'decrease the brightness'],
+            [''  ,  'brightnessUp'   ,  'increase the brightness'],
+            [''  ,  'brightnessDown' ,  'decrease the brightness'],
             [''  ,  'kelvinUp'       ,  'increase the kelvin'],
             [''  ,  'kelvinDown'     ,  'decrease the kelvin'],
             [''  ,  'saturationUp'   ,  'increase the saturation'],
@@ -47,7 +59,6 @@ make an alias to the options for convinience
     if (opts.options.token)
         token = opts.options.token
     else
-        fs           = require 'fs'
         home         = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
         fileContents = fs.readFileSync (home + '/.lifx_token')
         tokenObj     = JSON.parse fileContents
@@ -83,7 +94,13 @@ Set a property of a bulb
         log "Setting bulb(s) #{sel} to state #{prop}"
         lifx.setColor sel, prop, dur, power, cb
 
-    setcolor = setProp
+    setColor = setProp
+
+    setHue = (prop, sel="all", dur=1.0, power=true, cb=log) ->
+        setProp "hue:#{prop}", sel, dur, power, cb
+
+    setRGB = (prop, sel="all", dur=1.0, power=true, cb=log) ->
+        setProp "rgb:##{prop}", sel, dur, power, cb
 
     setBrightness = (prop, sel="all", dur=1.0, power=true, cb=log) ->
         setProp "brightness:#{prop}", sel, dur, power, cb
@@ -122,10 +139,10 @@ Set attributes light color, brightness, etc...
         setColor o.color
 
     if !(o.hue == undefined)
-        setProp "hue:#{o.hue}"
+        setHue o.hue
 
     if !(o.rgb == undefined)
-        setProp "##{o.rgb}"
+        setRGB o.rgb
 
     if !(o.saturation == undefined)
         setSaturation o.saturation
@@ -187,18 +204,23 @@ We will expect that functions passed into it expect one bulb entry at a time.
     changeAttribute = (config, isAdd) ->
         (bulb) ->
             id  = bulb.id
-            cur = config.current
+            log "id is #{id}"
+
+            cur = config.current bulb
+            log "cur is #{cur}"
 
             if (isAdd)
                 stp = config.step
             else
                 stp = 0-config.step
+            log "stp is #{stp}"
 
             nex = cur + stp
+            log "nex is #{nex}"
 
             if (nex < config.max && nex > config.min)
                 config.change nex, id
-            else if (config.step > 0)
+            else if (stp > 0)
                 log "Hit Maximum bound"
                 config.change 1.0, id
             else
