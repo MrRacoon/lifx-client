@@ -56,3 +56,8 @@ Usage: node index.js
   -v, --verbose         Log out verbose messages to the screen
 
 ```
+
+If you like to read source, go [check is out][sauce]. It's stupid easy to read
+
+
+[sauce]: 'src/index.litcoffee' 'Wicked easy to read'
