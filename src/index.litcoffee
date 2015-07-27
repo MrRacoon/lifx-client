@@ -15,11 +15,11 @@ Alias for the `console.log` function
         logFile = '/tmp/lifx-cli.log'
         fs.appendFile logFile, args.concat(['\n']).join(' ')
 
-
     log = (args...) ->
         addTime = [new Date()].concat(args)
         writeToLogFile addTime
-        console.log.apply null, addTime
+        if (verbose)
+            console.log.apply null, addTime
 
 ## Command Line Argument Parsing
 
@@ -42,7 +42,8 @@ Alias for the `console.log` function
             [''  ,  'kelvinDown'     ,  'decrease the kelvin'],
             [''  ,  'saturationUp'   ,  'increase the saturation'],
             [''  ,  'saturationDown' ,  'decrease the saturation'],
-            ['h' ,  'help'           ,  'display this help']
+            ['h' ,  'help'           ,  'display this help'],
+            ['v' ,  'verbose'        ,  'Log out verbose messages to the screen' ]
         ]
         .bindHelp()
         .parseSystem()
@@ -50,8 +51,11 @@ Alias for the `console.log` function
 
 make an alias to the options for convinience
 
-    o = opts.options
+    o       = opts.options
 
+    verbose = o.verbose
+
+    log "verbose mode is set to #{verbose}"
     log o
 
 ## Getting the token
