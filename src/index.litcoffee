@@ -9,17 +9,6 @@ Require the fs library for file handling
 
     fs      = require 'fs'
 
-Alias for the `console.log` function
-
-    writeToLogFile = (args...) ->
-        logFile = '/tmp/lifx-cli.log'
-        fs.appendFile logFile, args.concat(['\n']).join(' ')
-
-    log = (args...) ->
-        addTime = [new Date()].concat(args)
-        writeToLogFile addTime
-        if verbose
-            console.log.apply null, addTime
 
 ## Command Line Argument Parsing
 
@@ -43,33 +32,73 @@ Alias for the `console.log` function
             [''  ,  'kelvinDown'     ,  'decrease the kelvin'],
             [''  ,  'saturationUp'   ,  'increase the saturation'],
             [''  ,  'saturationDown' ,  'decrease the saturation'],
+            [''  ,  'logFile=ARG'    ,  'specify a log file to use (default: /tmp/lifx-cli.log)' ],
             ['h' ,  'help'           ,  'display this help'],
             ['v' ,  'verbose'        ,  'Log out verbose messages to the screen' ]
         ]
         .bindHelp()
         .parseSystem()
 
+I like me a good `console.log` alias. Here we decorate it with things like
+verbosity checking and logging to a file in tmp (or some other file specified
+by the `--logFile` flag)
 
-make an alias to the options for convinience
+    writeToLogFile = (args...) ->
+        logFile = o.logFile || '/tmp/lifx-cli.log'
+        str     = args
+            .concat ['\n']
+            .join ' '
+        fs.appendFile logFile, str
+
+    log = (args...) ->
+        addTime = [new Date()].concat(args)
+        writeToLogFile addTime
+        if verbose
+            console.log.apply null, addTime
+
+Make an alias to the options for convinience, and also check and set the
+verbosity level of the app.
 
     o       = opts.options
+    log o
 
     verbose = o.verbose
-
     log "verbose mode is set to #{verbose}"
-    log o
 
 ## Getting the token
 
-    if o.token
+Check to see if a token was specified in the arguments. If not, let's look for
+it on disk. Check to see if the user specified a file to look in, otherwise
+default to `~/.lifx_token`
+
+    if o.token?
         token = o.token
     else
         home         = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
-        fileContents = fs.readFileSync (o.tokenFile || home + '/.lifx_token')
-        tokenObj     = JSON.parse fileContents
-        token        = tokenObj.token
+        fileLocation = o.tokenFile || home + '/.lifx_token'
 
-Initialize it with the token
+Make an attempt to open the file and log the error if the action is
+unseuccessful. Without the token this app is useless, so if an error occurs, we
+will immediatly halt execution.
+
+        try
+            fileContents = fs.readFileSync fileLocation
+        catch err
+            log err
+            return
+
+At this point the file exists, so let's see if it is JSON, and if so, get the
+token property from the parsed object. Otherwise, assume that the contents of
+the file was the raw token and clean it up a bit.
+
+        try
+            tokenObj = JSON.parse fileContents
+            token    = tokenObj.token
+        catch e
+            token    = fileContents.replace /\r?\n|\r/, ''
+
+Finally, initialize the lifx object wit our token. Now we are ready to send out
+some instructions!
 
     lifx = new lifxObj token
 
@@ -86,12 +115,12 @@ Turn the lights on or off
     power = (selector, state, duration=1.0, cb=log) ->
         if (selector == '')
             selector = "all"
-        if (state == undefined)
-            log "toggling bulbs"
-            lifx.togglePower selector, cb
-        else
+        if state?
             log "turning bulbs #{state}"
             lifx.setPower selector, state, duration, cb
+        else
+            log "toggling bulbs"
+            lifx.togglePower selector, cb
 
 Set a property of a bulb
 
