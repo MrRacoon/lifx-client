@@ -57,7 +57,7 @@ Usage: node index.js
 
 ```
 
-If you like to read source, go [check is out][sauce]. It's stupid easy to read
+If you like to read source, go [check it out][sauce]. It's stupid easy to read
 
 
-[sauce]: 'src/index.litcoffee' 'Wicked easy to read'
+[sauce]: src/index.litcoffee 'Wicked easy to read'
