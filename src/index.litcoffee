@@ -18,7 +18,7 @@ Alias for the `console.log` function
     log = (args...) ->
         addTime = [new Date()].concat(args)
         writeToLogFile addTime
-        if (verbose)
+        if verbose
             console.log.apply null, addTime
 
 ## Command Line Argument Parsing
@@ -26,6 +26,7 @@ Alias for the `console.log` function
     opts = require 'node-getopt'
         .create [
             ['t' ,  'token=ARG'      ,  'the token in plainText'],
+            [''  ,  'tokenFile=ARG'  ,  'the file that houses the lifx token in json format'],
             [''  ,  'toggle[=ARG]'   ,  'toggle the power of the bulbs'],
             [''  ,  'on[=SELECTOR]'  ,  'turn on the lights'],
             [''  ,  'off[=ARG]'      ,  'turn off the lights'],
@@ -60,11 +61,11 @@ make an alias to the options for convinience
 
 ## Getting the token
 
-    if (opts.options.token)
-        token = opts.options.token
+    if o.token
+        token = o.token
     else
         home         = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
-        fileContents = fs.readFileSync (home + '/.lifx_token')
+        fileContents = fs.readFileSync (o.tokenFile || home + '/.lifx_token')
         tokenObj     = JSON.parse fileContents
         token        = tokenObj.token
 
