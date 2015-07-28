@@ -48,7 +48,7 @@ verbosity checking and logging to a file in tmp (or some other file specified
 by the `--logFile` flag)
 
     writeToLogFile = (args...) ->
-        logFile = o.logFile || '/tmp/lifx-cli.log'
+        logFile = o.logFile or '/tmp/lifx-cli.log'
         str     = args
             .concat ['\n']
             .join ' '
@@ -78,8 +78,8 @@ default to `~/.lifx_token`
     if o.token?
         token = o.token
     else
-        home         = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
-        fileLocation = o.tokenFile || home + '/.lifx_token'
+        home         = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
+        fileLocation = o.tokenFile or home + '/.lifx_token'
 
 Make an attempt to open the file and log the error if the action is
 unseuccessful. Without the token this app is useless, so if an error occurs, we
@@ -123,7 +123,7 @@ Turn the lights on or off
             selector = "all"
         if state?
             log "turning bulbs #{state}"
-            lifx.setPower selector, state, duration, cb
+            lifx.setPower selector, state ? "on" : "off", duration, cb
         else
             log "toggling bulbs"
             lifx.togglePower selector, cb
@@ -156,12 +156,12 @@ Toggle the lights on/off
 Power the lights on
 
     if ! (o.on == undefined)
-        power o.on, "on"
+        power o.on, on
 
 Power the lights off
 
     if ! (o.off == undefined)
-        power o.off, "off"
+        power o.off, off
 
 Get the status of the lights
 
@@ -247,7 +247,7 @@ We will expect that functions passed into it expect one bulb entry at a time.
                 nex = config.min
             else
                 log "Not sure what is happening with the nex value, defaulting"
-                nex = config.default || config.min
+                nex = config.default
 
 
             config.change nex, id
