@@ -38,7 +38,7 @@ Require the fs library for file handling
             # Mods
             ['d'  ,  'dur=ARG'        ,  'duration to make the change'],
             # Utility
-            ['s'  ,  'status'         ,  'show the status of the lights'],
+            ['a'  ,  'status'         ,  'show the status of the lights'],
             ['o'  ,  'logFile=ARG'    ,  'specify a log file to use (default: /tmp/lifx-cli.log)' ],
             ['h'  ,  'help'           ,  'display this help'],
             ['v'  ,  'verbose'        ,  'Log out verbose messages to the screen' ]
