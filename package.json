@@ -1,6 +1,5 @@
 {
   "name": "lifx-client",
-  "private": true,
   "version": "0.1.1",
   "description": "A cli application for talking to the official lifx-api",
   "main": "index.js",
@@ -21,6 +20,9 @@
   },
   "bin": {
       "lifxcli": "bin/lifxcli"
+  },
+  "lib": {
+      "index": "lib/index.js"
   },
   "engines": {
       "node": ">= 0.10.0"
