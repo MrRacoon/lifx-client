@@ -1,4 +1,3 @@
-
 ## LIFX-Client
 
 Create the lifx object
@@ -18,24 +17,28 @@ Require the fs library for file handling
 
     opts = require 'node-getopt'
         .create [
+            # Auth
             ['t' ,  'token=ARG'      ,  'the token in plainText'],
-            [''  ,  'tokenFile=ARG'  ,  'the file that houses the lifx token in json format'],
-            [''  ,  'toggle[=ARG]'   ,  'toggle the power of the bulbs'],
-            [''  ,  'on[=SELECTOR]'  ,  'turn on the lights'],
-            [''  ,  'off[=ARG]'      ,  'turn off the lights'],
+            ['f' ,  'tokenFile=ARG'  ,  'the file that houses the lifx token in json format'],
+            # On/Off
+            ['T'  ,  'toggle'        ,  'toggle the power of the bulbs'],
+            ['1'  ,  'on'            ,  'turn on the lights'],
+            ['0'  ,  'off'           ,  'turn off the lights'],
+            # Attributes
+            ['c'  ,  'color=ARG'     ,  'set color (blue, red, pink...)'],
+            ['h'  ,  'hue=ARG'       ,  'set color using hue (0-360)'],
+            ['k'  ,  'kel=ARG'       ,  'set kelvin (2500-9000)'],
+            ['b'  ,  'bri=ARG'       ,  'set brightness (0.0-1.0)'],
+            ['s'  ,  'sat=ARG'       ,  'set saturation (0.0-1.0)'],
+            # Selectors
+            ['i'  ,  'id=ARG'        ,  'select bulb(s) by id'],
+            ['l'  ,  'lab=ARG'       ,  'select bulb(s) by label'],
+            ['g'  ,  'grp=ARG'       ,  'select bulb(s) by group name'],
+            ['p'  ,  'loc=ARG'       ,  'select bulb(s) by location name'],
+            # Mods
+            [''  ,  'dur=ARG'        ,  'duration to make the change'],
+            # Utility
             ['s' ,  'status'         ,  'show the status of the lights'],
-            [''  ,  'color=ARG'      ,  'set color (blue, red, pink...)'],
-            [''  ,  'hue=ARG'        ,  'set color using hue (0-360)'],
-            [''  ,  'rgb=ARG'        ,  'set color using rgb (#RRGGBB)'],
-            [''  ,  'kelvin=ARG'     ,  'set kelvin (2500-9000)'],
-            [''  ,  'brightness=ARG' ,  'set brightness (0.0-1.0)'],
-            [''  ,  'saturation=ARG' ,  'set saturation (0.0-1.0)'],
-            [''  ,  'brightnessUp'   ,  'increase the brightness'],
-            [''  ,  'brightnessDown' ,  'decrease the brightness'],
-            [''  ,  'kelvinUp'       ,  'increase the kelvin'],
-            [''  ,  'kelvinDown'     ,  'decrease the kelvin'],
-            [''  ,  'saturationUp'   ,  'increase the saturation'],
-            [''  ,  'saturationDown' ,  'decrease the saturation'],
             [''  ,  'logFile=ARG'    ,  'specify a log file to use (default: /tmp/lifx-cli.log)' ],
             ['h' ,  'help'           ,  'display this help'],
             ['v' ,  'verbose'        ,  'Log out verbose messages to the screen' ]
@@ -60,14 +63,11 @@ by the `--logFile` flag)
         if verbose
             console.log.apply null, addTime
 
-Make an alias to the options for convinience, and also check and set the
+Make an alias to the options for convenience, and also check and set the
 verbosity level of the app.
 
     o       = opts.options
-    log o
-
     verbose = o.verbose
-    log "verbose mode is set to #{verbose}"
 
 ## Getting the token
 
@@ -82,8 +82,8 @@ default to `~/.lifx_token`
         fileLocation = o.tokenFile or home + '/.lifx_token'
 
 Make an attempt to open the file and log the error if the action is
-unseuccessful. Without the token this app is useless, so if an error occurs, we
-will immediatly halt execution.
+unsuccessful. Without the token this app is useless, so if an error occurs, we
+will immediately halt execution.
 
         try
             fileContents = fs.readFileSync fileLocation
@@ -119,8 +119,10 @@ Get and set the status of the lights
 Turn the lights on or off
 
     power = (selector, state, duration=1.0, cb=log) ->
+
         if (selector == '')
             selector = "all"
+
         if state?
             nex = if state then "on" else "off"
             log "turning bulbs #{nex}"
@@ -131,247 +133,86 @@ Turn the lights on or off
 
 Set a property of a bulb
 
-    setProp = (prop, sel="all", dur=1.0, power=true, cb=log) ->
+    setProp = (prop, sel="all", dur=1.0, power=false, cb=log) ->
         log "Setting bulb(s) #{sel} to state #{prop}"
         lifx.setColor sel, prop, dur, power, cb
 
-    setHue = (prop, sel="all", dur=1.0, power=true, cb=log) ->
-        setProp "hue:#{prop}", sel, dur, power, cb
-
-    setBrightness = (prop, sel="all", dur=1.0, power=true, cb=log) ->
-        setProp "brightness:#{prop}", sel, dur, power, cb
-
-    setKelvin = (prop, sel="all", dur=1.0, power=true, cb=log) ->
-        setProp "kelvin:#{prop}", sel, dur, power, cb
-
-    setSaturation = (prop, sel="all", dur=1.0, power=true, cb=log) ->
-        setProp "saturation:#{prop}", sel, dur, power, cb
-
 ## Putting all the logic together
-
-Toggle the lights on/off
-
-    if ! (o.toggle == undefined)
-        power o.toggle
-
-Power the lights on
-
-    if ! (o.on == undefined)
-        power o.on, on
-
-Power the lights off
-
-    if ! (o.off == undefined)
-        power o.off, off
-
-Get the status of the lights
 
     if ! (o.status == undefined)
         getStatus()
+        return # Exit immediately
 
-## State modifications
+## State modifications (Take Two)
 
-Below are high level interfaces to modify the current state by slight
-differences. For instance, turning up the current brightness as opposed to
-setting it to a specific value.
+Listen all this stuff above me is all well and good, but how lame is it that we
+have to make multiple API calls for one command involving multiple attribute
+changes? Short answer: Really.
 
-The payload from `getStatus` returns the following list of objects denoting a
-bulbs current state:
+Let's do something more tricky. How about an object that collects information
+about the next state change from the arguments, and applies them in one go
+using some opinions?
 
-```json
-[
-  {
-      "id": "d3b2f2d97452",
-      "uuid": "8fa5f072-af97-44ed-ae54-e70fd7bd9d20",
-      "label": "Left Lamp",
-      "connected": true,
-      "power": "on",
-      "color": {
-            "hue": 250.0,
-            "saturation": 0.5,
-            "kelvin": 3500
-          },
-      "brightness": 0.5,
-      "group": {
-            "id": "1c8de82b81f445e7cfaafae49b259c71",
-            "name": "Lounge"
-          },
-      "location": {
-            "id": "1d6fe8ef0fde4c6d77b0012dc736662c",
-            "name": "Home"
-          },
-      "last_seen": "2015-03-02T08:53:02.867+00:00",
-      "seconds_since_seen": 0.002869418
-    }
-]
+Yeah!
 
-```
-
-Couple functions to get information from a bulb, will come into play later
-
-We first wrap get status with a higher order function to modify this payload.
-We will expect that functions passed into it expect one bulb entry at a time.
-
-    modify = (func) ->
-        getStatus (payload) ->
-            arr = JSON.parse payload
-            arr.forEach(func)
-
-    changeAttribute = (config, isAdd) ->
-        (bulb) ->
-            id  = bulb.id
-            log "id is #{id}"
-
-            cur = config.current bulb
-            log "cur is #{cur}"
-
-            if (isAdd)
-                nex = cur + config.step
+    class ColorState
+        constructor: (ops) ->
+            # A color name takes precedence, since we can extract information
+            # about brightness or saturation
+            obj = colorParser ops.color
+            if obj.hsl?
+                {@dur, @kel}       = ops
+                [@hue, @sat, @bri] = obj.hsl
+                @hue               = ops.hue if ops.hue?
+                @sat               = ops.sat if ops.sat?
+                @bri               = ops.bri if ops.bri?
             else
-                nex = cur - config.step
+                # Get state from cli, Override color props if available
+                {@hue, @sat, @bri, @dur, @kel} = ops
 
-            log "nex is #{nex}"
+            @sat = @sat / 100 if @sat
+            @bri = @bri / 100 if @bri
+            @kel = ((@kel / 100) * 6500) + 2500 if @kel
 
-            # If the config specifies that the range is circular, ignore bounds
-            # and loop around
-            if config.circular
-                nex = nex % config.max
-                log "circular nex is #{nex}"
-            # Ensure that the nex value is within the configured bounds
-            else if config.min < nex < config.max
-                nex = nex
-            # Otherwise if the stp was increasing, set nex to the maximum
-            else if nex > config.max
-                log "Hit Maximum bound"
-                nex = config.max
-            # Otherwise if the stp was dencreasing, set nex to the minimum
-            else if nex < config.min
-                log "Hit Minimum bound"
-                nex = config.min
+            # Selection
+            @sel = switch
+                when o.id?
+                    "id:#{o.id}"
+                when o.lab?
+                    "label:#{o.lab}"
+                when o.grp?
+                    "group:#{o.grp}"
+                when o.loc?
+                    "location:#{o.loc}"
+                else
+                    "all"
+
+        go: () ->
+            changeString = ""
+            # I'm going to decide that kelvin always takes precedence. This
+            # means that if it is specified, then switch the lights over to a
+            # white based color, and ignore all the other color attributes
+            if @kel?
+                changeString += "kelvin:#{@kel}"
             else
-                log "Not sure what is happening with the nex value, defaulting"
-                nex = config.default
+                changeString += "hue:#{@hue} " if @hue?
+                changeString += "saturation:#{@sat} " if @sat?
+                changeString += "brightness:#{@bri} " if @bri?
+
+            if changeString.length > 0
+                log "Applying change to bulbs"
+                setProp changeString, @sel, @dur, o.on, log
+            else if o.toggle
+                power @sel
+            else if o.on or o.off
+                # I'm going to let off take precedence
+                power @sel, (not o.off) && o.on
 
 
-            config.change nex, id
-
-Set attributes light color, brightness, etc... 
-
-Brightness adjustments
-
-    getBrightness = (bulb) -> bulb.brightness
-
-    brightnessAdjustments =
-        change : setBrightness
-        current: getBrightness
-        step   : 0.1
-        min    : 0.0
-        max    : 1.0
-
-    if o.brightness?
-        setBrightness o.brightness
-
-    if o.brightnessUp?
-        increaseBrightness = changeAttribute brightnessAdjustments, true
-        modify increaseBrightness
-
-    if o.brightnessDown?
-        decreaseBrightness = changeAttribute brightnessAdjustments, false
-        modify decreaseBrightness
-
-Kelvin adjustments
-
-    getKelvin = (bulb) -> bulb.color.kelvin
-
-    kelvinAdjustments =
-        change : setKelvin
-        current: getKelvin
-        step   : 500
-        min    : 2500
-        max    : 9000
-
-    if o.kelvin?
-        setKelvin o.kelvin
-
-    if o.kelvinUp?
-        increaseKelvin = changeAttribute kelvinAdjustments, true
-        modify increaseKelvin
-
-    if o.kelvinDown?
-        decreaseKelvin = changeAttribute kelvinAdjustments, false
-        modify decreaseKelvin
-
-Color adjustments
 
 
-Color Adjustments
 
-    getHue = (bulb) -> bulb.color.hue
-
-    # From HSL
-
-    hslToHex = (hslVal) ->
-        obj = colorParser "hsl(#{hslVal}, 100, 50)"
-        log "Parsed hsl value #{hslVal} to hex value #{obj}"
-        return obj?.hex
-
-    # To HSL
-
-    hexToHsl = (hexVal) ->
-        obj = colorParser "##{hexVal}"
-        log "Parsed hsl value #{hexVal} to hex value #{obj}"
-        return obj?.hsl?[0]
-
-    nameToHsl = (colorName) ->
-        obj = colorParser colorName
-        log "Parsed name value #{colorName} to hex value #{obj}"
-        console.log obj
-        return obj?.hsl?[0]
-
-    hueAdjustments =
-        change   : setHue
-        current  : getHue
-        step     : 45
-        min      : 0
-        max      : 360
-        circular : true
-
-    if o.rgb?
-        setHue hexToHsl o.rgb
-
-    if o.color?
-        setHue nameToHsl o.color
-
-    if o.hue?
-        setHue o.hue
-
-    if o.hueUp?
-        increaseHue = changeAttribute hueAdjustments, true
-        modify increaseHue
-
-    if o.hueDown?
-        decreaseHue = changeAttribute hueAdjustments, false
-        modify decreaseHue
-
-Saturation adjustments
-
-    getSaturation = (bulb) -> bulb.color.saturation
-
-    saturationAdjustments =
-        change : setSaturation
-        current: getSaturation
-        step   : 0.1
-        min    : 0.0
-        max    : 1.0
-
-    if o.saturation?
-        setSaturation o.saturation
-
-    if o.saturationUp?
-        increaseSaturation = changeAttribute saturationAdjustments, true
-        modify increaseSaturation
-
-    if o.saturationDown?
-        decreaseSaturation = changeAttribute saturationAdjustments, false
-        modify decreaseSaturation
+    t = new ColorState(o)
+    log t
+    t.go()
 
