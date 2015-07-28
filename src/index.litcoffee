@@ -18,30 +18,30 @@ Require the fs library for file handling
     opts = require 'node-getopt'
         .create [
             # Auth
-            ['t' ,  'token=ARG'      ,  'the token in plainText'],
-            ['f' ,  'tokenFile=ARG'  ,  'the file that houses the lifx token in json format'],
+            ['t'  ,  'token=ARG'      ,  'the token in plainText'],
+            ['f'  ,  'tokenFile=ARG'  ,  'the file that houses the lifx token in json format'],
             # On/Off
-            ['T'  ,  'toggle'        ,  'toggle the power of the bulbs'],
-            ['1'  ,  'on'            ,  'turn on the lights'],
-            ['0'  ,  'off'           ,  'turn off the lights'],
+            ['T'  ,  'toggle'         ,  'toggle the power of the bulbs'],
+            ['1'  ,  'on'             ,  'turn on the lights'],
+            ['0'  ,  'off'            ,  'turn off the lights'],
             # Attributes
-            ['c'  ,  'color=ARG'     ,  'set color (blue, red, pink...)'],
-            ['h'  ,  'hue=ARG'       ,  'set color using hue (0-360)'],
-            ['k'  ,  'kel=ARG'       ,  'set kelvin (2500-9000)'],
-            ['b'  ,  'bri=ARG'       ,  'set brightness (0.0-1.0)'],
-            ['s'  ,  'sat=ARG'       ,  'set saturation (0.0-1.0)'],
+            ['c'  ,  'color=ARG'      ,  'set color (blue, red, pink...)'],
+            ['h'  ,  'hue=ARG'        ,  'set color using hue (0-360)'],
+            ['k'  ,  'kel=ARG'        ,  'set kelvin (2500-9000)'],
+            ['b'  ,  'bri=ARG'        ,  'set brightness (0.0-1.0)'],
+            ['s'  ,  'sat=ARG'        ,  'set saturation (0.0-1.0)'],
             # Selectors
-            ['i'  ,  'id=ARG'        ,  'select bulb(s) by id'],
-            ['l'  ,  'lab=ARG'       ,  'select bulb(s) by label'],
-            ['g'  ,  'grp=ARG'       ,  'select bulb(s) by group name'],
-            ['p'  ,  'loc=ARG'       ,  'select bulb(s) by location name'],
+            ['i'  ,  'id=ARG'         ,  'select bulb(s) by id'],
+            ['l'  ,  'lab=ARG'        ,  'select bulb(s) by label'],
+            ['g'  ,  'grp=ARG'        ,  'select bulb(s) by group name'],
+            ['p'  ,  'loc=ARG'        ,  'select bulb(s) by location name'],
             # Mods
-            [''  ,  'dur=ARG'        ,  'duration to make the change'],
+            ['d'  ,  'dur=ARG'        ,  'duration to make the change'],
             # Utility
-            ['s' ,  'status'         ,  'show the status of the lights'],
-            [''  ,  'logFile=ARG'    ,  'specify a log file to use (default: /tmp/lifx-cli.log)' ],
-            ['h' ,  'help'           ,  'display this help'],
-            ['v' ,  'verbose'        ,  'Log out verbose messages to the screen' ]
+            ['s'  ,  'status'         ,  'show the status of the lights'],
+            ['o'  ,  'logFile=ARG'    ,  'specify a log file to use (default: /tmp/lifx-cli.log)' ],
+            ['h'  ,  'help'           ,  'display this help'],
+            ['v'  ,  'verbose'        ,  'Log out verbose messages to the screen' ]
         ]
         .bindHelp()
         .parseSystem()
