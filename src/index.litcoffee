@@ -5,6 +5,10 @@ Create the lifx object
 
     lifxObj = require 'lifx-api'
 
+A color parser
+
+    colorParser = require 'parse-color'
+
 Require the fs library for file handling
 
     fs      = require 'fs'
@@ -130,13 +134,8 @@ Set a property of a bulb
         log "Setting bulb(s) #{sel} to state #{prop}"
         lifx.setColor sel, prop, dur, power, cb
 
-    setColor = setProp
-
     setHue = (prop, sel="all", dur=1.0, power=true, cb=log) ->
         setProp "hue:#{prop}", sel, dur, power, cb
-
-    setRGB = (prop, sel="all", dur=1.0, power=true, cb=log) ->
-        setProp "rgb:##{prop}", sel, dur, power, cb
 
     setBrightness = (prop, sel="all", dur=1.0, power=true, cb=log) ->
         setProp "brightness:#{prop}", sel, dur, power, cb
@@ -168,26 +167,6 @@ Get the status of the lights
 
     if ! (o.status == undefined)
         getStatus()
-
-Set attributes light color, brightness, etc... 
-
-    if !(o.color == undefined)
-        setColor o.color
-
-    if !(o.hue == undefined)
-        setHue o.hue
-
-    if !(o.rgb == undefined)
-        setRGB o.rgb
-
-    if !(o.saturation == undefined)
-        setSaturation o.saturation
-
-    if !(o.kelvin == undefined)
-        setKelvin o.kelvin
-
-    if !(o.brightness == undefined)
-        setBrightness o.brightness
 
 ## State modifications
 
@@ -246,22 +225,34 @@ We will expect that functions passed into it expect one bulb entry at a time.
             log "cur is #{cur}"
 
             if (isAdd)
-                stp = config.step
+                nex = nex+config.step
             else
-                stp = 0-config.step
-            log "stp is #{stp}"
+                nex = nex-config.step
 
-            nex = cur + stp
             log "nex is #{nex}"
 
-            if (nex < config.max && nex > config.min)
-                config.change nex, id
-            else if (stp > 0)
+            # If the config specifies that the range is circular, ignore bounds
+            # and loop around
+            if config.circular
+                nex = nex % config.max
+                log "circular nex is #{nex}"
+            # Ensure that the nex value is within the configured bounds
+            else if nex > config.max
                 log "Hit Maximum bound"
-                config.change config.max, id
-            else
+                nex = config.max
+            # Otherwise if the stp was increasing, set nex to the maximum
+            # Otherwise if the stp was dencreasing, set nex to the minimum
+            else if nex < config.min
                 log "Hit Minimum bound"
-                config.change config.min, id
+                nex = config.min
+            else
+                log "Not sure what is happening with the nex value, defaulting"
+                nex = config.default || config.min
+
+
+            config.change nex, id
+
+Set attributes light color, brightness, etc... 
 
 Brightness adjustments
 
@@ -274,11 +265,14 @@ Brightness adjustments
         min    : 0.0
         max    : 1.0
 
-    if o.brightnessUp
+    if o.brightness?
+        setBrightness o.brightness
+
+    if o.brightnessUp?
         increaseBrightness = changeAttribute brightnessAdjustments, true
         modify increaseBrightness
 
-    if o.brightnessDown
+    if o.brightnessDown?
         decreaseBrightness = changeAttribute brightnessAdjustments, false
         modify decreaseBrightness
 
@@ -293,30 +287,62 @@ Kelvin adjustments
         min    : 2500
         max    : 9000
 
-    if o.kelvinUp
+    if o.kelvin?
+        setKelvin o.kelvin
+
+    if o.kelvinUp?
         increaseKelvin = changeAttribute kelvinAdjustments, true
         modify increaseKelvin
 
-    if o.kelvinDown
+    if o.kelvinDown?
         decreaseKelvin = changeAttribute kelvinAdjustments, false
         modify decreaseKelvin
 
-Hue adjustments
+Color adjustments
+
+
+Color Adjustments
 
     getHue = (bulb) -> bulb.color.hue
 
-    hueAdjustments =
-        change : setHue
-        current: getHue
-        step   : 45
-        min    : 0
-        max    : 360
+    # From HSL
 
-    if o.hueUp
+    hslToHex = (hslVal) ->
+        obj = colorParser "hsl(#{hslVal}, 100, 50)"
+        return obj?.hex?
+
+    # To HSL
+
+    hexToHsl = (hexVal) ->
+        obj = colorParser "##{hexVal}"
+        return obj?.hsl?[0]?
+
+    nameToHsl = (colorName) ->
+        obj = colorParser colorName
+        return obj?.hsl?[0]?
+
+    hueAdjustments =
+        change   : setHue
+        current  : getHue
+        step     : 45
+        min      : 0
+        max      : 360
+        circular : true
+
+    if o.rgb?
+        setHue hexToHsl o.rgb
+
+    if o.color?
+        setHue nameToHsl o.color
+
+    if o.hue?
+        setHue o.hue
+
+    if o.hueUp?
         increaseHue = changeAttribute hueAdjustments, true
         modify increaseHue
 
-    if o.hueDown
+    if o.hueDown?
         decreaseHue = changeAttribute hueAdjustments, false
         modify decreaseHue
 
@@ -331,11 +357,14 @@ Saturation adjustments
         min    : 2500
         max    : 9000
 
-    if o.saturationUp
+    if o.saturation?
+        setSaturation o.saturation
+
+    if o.saturationUp?
         increaseSaturation = changeAttribute saturationAdjustments, true
         modify increaseSaturation
 
-    if o.saturationDown
+    if o.saturationDown?
         decreaseSaturation = changeAttribute saturationAdjustments, false
         modify decreaseSaturation
 

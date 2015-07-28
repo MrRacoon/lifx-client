@@ -10,7 +10,8 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "lifx-api": "~1.0.1",
-    "node-getopt": "~0.2.3"
+    "node-getopt": "~0.2.3",
+    "parse-color": "~1.0.0"
   },
   "devDependencies": {
     "gulp": "~3.9.0",
