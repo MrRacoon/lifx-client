@@ -1,4 +1,3 @@
-
 # Load the main task runner
 
     gulp   = require 'gulp'
@@ -11,22 +10,20 @@
 
     linter = require 'gulp-coffeelint'
 
-# Provide the paths from source to dist
+# Provide the paths from source to lib
 
     paths =
         coffee:
             src: 'src/index.litcoffee'
-            dest: 'dist'
+            dest: 'lib'
 
 # Default task
 
 The default task is simple right now. Just take the index file, compile from
-coffeescript to js, lint it and move it to dist.
+coffeescript to js, lint it and move it to lib.
 
     gulp.task 'default', ->
         gulp.src paths.coffee.src
             .pipe coffee {bare: true}
             #.pipe linter
             .pipe gulp.dest paths.coffee.dest
-
-

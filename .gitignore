@@ -1,5 +1,5 @@
 node_modules/*
 lifx_token
-dist/*
+lib/*
 *.swp
 npm-debug.log
