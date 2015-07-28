@@ -41,7 +41,7 @@ command line args
 
 ```bash
 
-Usage: node lifxcli
+Usage: lifxcli OPTIONS
 
   -t, --token=ARG      the token in plainText
   -f, --tokenFile=ARG  the file that houses the lifx token in json format
