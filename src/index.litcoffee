@@ -122,8 +122,9 @@ Turn the lights on or off
         if (selector == '')
             selector = "all"
         if state?
-            log "turning bulbs #{state}"
-            lifx.setPower selector, state ? "on" : "off", duration, cb
+            nex = if state then "on" else "off"
+            log "turning bulbs #{nex}"
+            lifx.setPower selector, nex, duration, cb
         else
             log "toggling bulbs"
             lifx.togglePower selector, cb
@@ -225,9 +226,9 @@ We will expect that functions passed into it expect one bulb entry at a time.
             log "cur is #{cur}"
 
             if (isAdd)
-                nex = nex+config.step
+                nex = cur + config.step
             else
-                nex = nex-config.step
+                nex = cur - config.step
 
             log "nex is #{nex}"
 
@@ -237,10 +238,12 @@ We will expect that functions passed into it expect one bulb entry at a time.
                 nex = nex % config.max
                 log "circular nex is #{nex}"
             # Ensure that the nex value is within the configured bounds
+            else if config.min < nex < config.max
+                nex = nex
+            # Otherwise if the stp was increasing, set nex to the maximum
             else if nex > config.max
                 log "Hit Maximum bound"
                 nex = config.max
-            # Otherwise if the stp was increasing, set nex to the maximum
             # Otherwise if the stp was dencreasing, set nex to the minimum
             else if nex < config.min
                 log "Hit Minimum bound"
@@ -309,17 +312,21 @@ Color Adjustments
 
     hslToHex = (hslVal) ->
         obj = colorParser "hsl(#{hslVal}, 100, 50)"
-        return obj?.hex?
+        log "Parsed hsl value #{hslVal} to hex value #{obj}"
+        return obj?.hex
 
     # To HSL
 
     hexToHsl = (hexVal) ->
         obj = colorParser "##{hexVal}"
-        return obj?.hsl?[0]?
+        log "Parsed hsl value #{hexVal} to hex value #{obj}"
+        return obj?.hsl?[0]
 
     nameToHsl = (colorName) ->
         obj = colorParser colorName
-        return obj?.hsl?[0]?
+        log "Parsed name value #{colorName} to hex value #{obj}"
+        console.log obj
+        return obj?.hsl?[0]
 
     hueAdjustments =
         change   : setHue
@@ -353,9 +360,9 @@ Saturation adjustments
     saturationAdjustments =
         change : setSaturation
         current: getSaturation
-        step   : 500
-        min    : 2500
-        max    : 9000
+        step   : 0.1
+        min    : 0.0
+        max    : 1.0
 
     if o.saturation?
         setSaturation o.saturation
