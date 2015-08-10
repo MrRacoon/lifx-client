@@ -8,6 +8,19 @@ A color parser
 
     colorParser = require 'parse-color'
 
+A notification system
+
+    notifier = require 'node-notifier'
+    path     = require 'path'
+
+    notify = (message) ->
+        notifier.notify {
+            title: 'Lifx-cli',
+            message: message,
+            icon: path.join(__dirname + '/images/icon.png'),
+            time: 1
+        }
+
 Require the fs library for file handling
 
     fs      = require 'fs'
@@ -187,7 +200,7 @@ Yeah!
                 else
                     "all"
 
-        go: () ->
+        go: ->
             changeString = ""
             # I'm going to decide that kelvin always takes precedence. This
             # means that if it is specified, then switch the lights over to a
@@ -201,10 +214,15 @@ Yeah!
 
             if changeString.length > 0
                 log "Applying change to bulbs"
+                notify changeString
                 setProp changeString, @sel, @dur, o.on, log
             else if o.toggle
+                notify "toggling lights"
                 power @sel
             else if o.on or o.off
+                state = "on"  if o.on
+                state = "off" if o.off
+                notify "Turning lights #{state}"
                 # I'm going to let off take precedence
                 power @sel, (not o.off) && o.on
 

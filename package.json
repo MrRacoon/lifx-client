@@ -6,31 +6,34 @@
   "author": "Erik Sutherland",
   "license": "MIT",
   "preferGlobal": true,
-  "keywords": ["lifx"],
+  "keywords": [
+    "lifx"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublish": "gulp"
   },
   "repository": {
-      "type": "git",
-      "url": "git@github.com:MrRacoon/lifx-cli.git"
+    "type": "git",
+    "url": "git@github.com:MrRacoon/lifx-cli.git"
   },
   "bugs": {
-      "url": "https://github.com/MrRacoon/lifx-cli/issues"
+    "url": "https://github.com/MrRacoon/lifx-cli/issues"
   },
   "bin": {
-      "lifxcli": "bin/lifxcli"
+    "lifxcli": "bin/lifxcli"
   },
   "lib": {
-      "index": "lib/index.js"
+    "index": "lib/index.js"
   },
   "engines": {
-      "node": ">= 0.10.0"
+    "node": ">= 0.10.0"
   },
   "dependencies": {
     "lifx-api": "~1.0.1",
     "node-getopt": "~0.2.3",
-    "parse-color": "~1.0.0"
+    "parse-color": "~1.0.0",
+    "node-notifier": "~4.2.3"
   },
   "devDependencies": {
     "gulp": "~3.9.0",
