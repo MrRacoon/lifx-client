@@ -2,11 +2,9 @@
 
 Create the lifx object
 
-    lifxObj = require 'lifx-api'
-
-A color parser
-
+    lifxObj     = require 'lifx-api'
     colorParser = require 'parse-color'
+    fs          = require 'fs'
 
 A notification system
 
@@ -20,10 +18,6 @@ A notification system
             icon: path.join(__dirname + '/images/icon.png'),
             time: 1
         }
-
-Require the fs library for file handling
-
-    fs      = require 'fs'
 
 
 ## Command Line Argument Parsing
@@ -59,6 +53,13 @@ Require the fs library for file handling
         .bindHelp()
         .parseSystem()
 
+Make an alias to the options for convenience, and also check and set the
+verbosity level of the app.
+
+    o       = opts.options
+    verbose = o.verbose
+
+
 I like me a good `console.log` alias. Here we decorate it with things like
 verbosity checking and logging to a file in tmp (or some other file specified
 by the `--logFile` flag)
@@ -76,27 +77,25 @@ by the `--logFile` flag)
         if verbose
             console.log.apply null, addTime
 
-Make an alias to the options for convenience, and also check and set the
-verbosity level of the app.
-
-    o       = opts.options
-    verbose = o.verbose
-
 ## Getting the token
 
 Check to see if a token was specified in the arguments. If not, let's look for
 it on disk. Check to see if the user specified a file to look in, otherwise
 default to `~/.lifx_token`
 
-    if o.token?
-        token = o.token
-    else
-        home         = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
-        fileLocation = o.tokenFile or home + '/.lifx_token'
-
 Make an attempt to open the file and log the error if the action is
 unsuccessful. Without the token this app is useless, so if an error occurs, we
 will immediately halt execution.
+
+the file exists, so let's see if it is JSON, and if so, get the token property
+from the parsed object. Otherwise, assume that the contents of the file was the
+raw token and clean it up a bit.
+
+    if o.token?
+        token = o.token
+    else
+        home = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
+        fileLocation = o.tokenFile or home + '/.lifx_token'
 
         try
             fileContents = fs.readFileSync fileLocation
@@ -104,19 +103,15 @@ will immediately halt execution.
             log err
             return
 
-At this point the file exists, so let's see if it is JSON, and if so, get the
-token property from the parsed object. Otherwise, assume that the contents of
-the file was the raw token and clean it up a bit.
-
         try
             tokenObj = JSON.parse fileContents
             token    = tokenObj.token
         catch e
-            token    = fileContents
-                .replace /\r?\n|\r/, ''
-                .replace /\w/, ''
+            token = fileContents
+                .replace /\r?\n|\r/, '' # Remove line endings
+                .replace /\w/, ''       # Remove Whitespace
 
-Finally, initialize the lifx object wit our token. Now we are ready to send out
+Initialize the lifx object wit our token. Now we are ready to send out
 some instructions!
 
     lifx = new lifxObj token
@@ -152,7 +147,7 @@ Set a property of a bulb
 
 ## Putting all the logic together
 
-    if ! (o.status == undefined)
+    if o.status?
         getStatus()
         return # Exit immediately
 
