@@ -1,16 +1,12 @@
-# Load the main task runner
+Load the main task runner
 
     gulp   = require 'gulp'
 
-# Load the coffeescript transpiler
+Load the coffeescript transpiler
 
     coffee = require 'gulp-coffee'
 
-# Load the linter
-
-    linter = require 'gulp-coffeelint'
-
-# Provide the paths from source to lib
+Provide the paths from source to lib
 
     paths =
         coffee:
@@ -20,7 +16,7 @@
             src: 'images/*'
             dest: 'lib/images'
 
-# Default task
+Default task
 
 The default task is simple right now. Just take the index file, compile from
 coffeescript to js, lint it and move it to lib.
@@ -28,7 +24,6 @@ coffeescript to js, lint it and move it to lib.
     gulp.task 'default', ['images'], ->
         gulp.src paths.coffee.src
             .pipe coffee {bare: true}
-            #.pipe linter
             .pipe gulp.dest paths.coffee.dest
 
 
