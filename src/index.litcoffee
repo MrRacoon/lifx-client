@@ -19,6 +19,23 @@ A notification system
             time: 1
         }
 
+I like me a good `console.log` alias. Here we decorate it with things like
+verbosity checking and logging to a file in tmp (or some other file specified
+by the `--logFile` flag)
+
+    writeToLogFile = (args...) ->
+        logFile = o.logFile or '/tmp/lifx-cli.log'
+        str     = args
+            .concat ['\n']
+            .join ' '
+        fs.appendFile logFile, str
+
+    log = (args...) ->
+        addTime = [new Date()].concat(args)
+        writeToLogFile addTime
+        if verbose
+            console.log.apply null, addTime
+
 
 ## Command Line Argument Parsing
 
@@ -58,25 +75,6 @@ verbosity level of the app.
 
     o       = opts.options
     verbose = o.verbose
-
-
-I like me a good `console.log` alias. Here we decorate it with things like
-verbosity checking and logging to a file in tmp (or some other file specified
-by the `--logFile` flag)
-
-    writeToLogFile = (args...) ->
-        logFile = o.logFile or '/tmp/lifx-cli.log'
-        str     = args
-            .concat ['\n']
-            .join ' '
-        fs.appendFile logFile, str
-
-    log = (args...) ->
-        addTime = [new Date()].concat(args)
-        writeToLogFile addTime
-        if verbose
-            console.log.apply null, addTime
-
 ## Getting the token
 
 Check to see if a token was specified in the arguments. If not, let's look for
@@ -110,6 +108,7 @@ raw token and clean it up a bit.
             token = fileContents
                 .replace /\r?\n|\r/, '' # Remove line endings
                 .replace /\w/, ''       # Remove Whitespace
+
 
 Initialize the lifx object wit our token. Now we are ready to send out
 some instructions!
