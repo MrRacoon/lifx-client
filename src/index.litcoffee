@@ -1,230 +1,135 @@
+
 ## LIFX-Client
 
-Create the lifx object
-
-    lifxObj     = require 'lifx-api'
-    colorParser = require 'parse-color'
-    fs          = require 'fs'
-
-A notification system
-
+    fs       = require 'fs'
+    lifxObj  = require 'lifx-api'
     notifier = require 'node-notifier'
     path     = require 'path'
+    R        = require 'ramda'
 
-    notify = (message) ->
-        notifier.notify {
-            title: 'Lifx-cli',
-            message: message,
-            icon: path.join(__dirname + '/images/icon.png'),
-            time: 1
-        }
+    colorParser = require 'parse-color'
 
-I like me a good `console.log` alias. Here we decorate it with things like
-verbosity checking and logging to a file in tmp (or some other file specified
-by the `--logFile` flag)
+    lifxclIcon = path.join(__dirname + '/images/icon.png')
 
-    writeToLogFile = (args...) ->
-        logFile = o.logFile or '/tmp/lifx-cli.log'
-        str     = args
-            .concat ['\n']
-            .join ' '
-        fs.appendFile logFile, str
-
-    log = (args...) ->
-        addTime = [new Date()].concat(args)
-        writeToLogFile addTime
-        if verbose
-            console.log.apply null, addTime
-
-
-## Command Line Argument Parsing
-
-    opts = require 'node-getopt'
+    commandlineConfig = require 'node-getopt'
         .create [
+            # Config
+            ['c'  ,  'config=ARG'     ,  'Provide a lifxcli configuration file path for setting default settings'],
             # Auth
-            ['t'  ,  'token=ARG'      ,  'the token in plainText'],
-            ['f'  ,  'tokenFile=ARG'  ,  'the file that houses the lifx token in json format'],
+            ['k'  ,  'token=ARG'      ,  'the token in plainText'],
             # On/Off
             ['T'  ,  'toggle'         ,  'toggle the power of the bulbs'],
             ['1'  ,  'on'             ,  'turn on the lights'],
             ['0'  ,  'off'            ,  'turn off the lights'],
             # Attributes
-            ['c'  ,  'color=ARG'      ,  'set color (blue, red, pink...)'],
-            ['h'  ,  'hue=ARG'        ,  'set color using hue (0-360)'],
-            ['k'  ,  'kel=ARG'        ,  'set kelvin (2500-9000)'],
-            ['b'  ,  'bri=ARG'        ,  'set brightness (0.0-1.0)'],
-            ['s'  ,  'sat=ARG'        ,  'set saturation (0.0-1.0)'],
+            ['C'  ,  'color=ARG'      ,  'set color (blue, red, pink...)'],
+            ['H'  ,  'hue=ARG'        ,  'set color using hue (0-360)'],
+            ['K'  ,  'kelvin=ARG'     ,  'set kelvin (2500-9000)'],
+            ['B'  ,  'brightness=ARG' ,  'set brightness (0.0-1.0)'],
+            ['S'  ,  'saturation=ARG' ,  'set saturation (0.0-1.0)'],
             # Selectors
             ['i'  ,  'id=ARG'         ,  'select bulb(s) by id'],
-            ['l'  ,  'lab=ARG'        ,  'select bulb(s) by label'],
-            ['g'  ,  'grp=ARG'        ,  'select bulb(s) by group name'],
-            ['p'  ,  'loc=ARG'        ,  'select bulb(s) by location name'],
+            ['l'  ,  'label=ARG'      ,  'select bulb(s) by label'],
+            ['g'  ,  'group=ARG'      ,  'select bulb(s) by group name'],
+            ['p'  ,  'location=ARG'   ,  'select bulb(s) by location name'],
             # Mods
-            ['d'  ,  'dur=ARG'        ,  'duration to make the change'],
+            ['d'  ,  'duration=ARG'   ,  'duration to make the change'],
             # Utility
             ['a'  ,  'status'         ,  'show the status of the lights'],
             ['o'  ,  'logFile=ARG'    ,  'specify a log file to use (default: /tmp/lifx-cli.log)' ],
             ['h'  ,  'help'           ,  'display this help'],
             ['v'  ,  'verbose'        ,  'Log out verbose messages to the screen' ]
+            [''   ,  'changeString'   ,  'Return the string that would be used in the Api to modify bulb state' ]
         ]
         .bindHelp()
         .parseSystem()
+        .options
 
-Make an alias to the options for convenience, and also check and set the
-verbosity level of the app.
+    homeDirectory      = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
+    defaultConfigFile  = commandlineConfig.config or homeDirectory + '/.config/lifxcli'
+    makeConfig         = R.compose JSON.parse, fs.readFileSync
 
-    o       = opts.options
-    verbose = o.verbose
-## Getting the token
+    try
+        o = R.merge (makeConfig defaultConfigFile), commandlineConfig
+    catch err
+        console.log err
+        return
 
-Check to see if a token was specified in the arguments. If not, let's look for
-it on disk. Check to see if the user specified a file to look in, otherwise
-default to `~/.lifx_token`
-
-Make an attempt to open the file and log the error if the action is
-unsuccessful. Without the token this app is useless, so if an error occurs, we
-will immediately halt execution.
-
-the file exists, so let's see if it is JSON, and if so, get the token property
-from the parsed object. Otherwise, assume that the contents of the file was the
-raw token and clean it up a bit.
-
-    if o.token?
-        token = o.token
-    else
-        home = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
-        fileLocation = o.tokenFile or home + '/.lifx_token'
-
-        try
-            fileContents = fs.readFileSync fileLocation
-        catch err
-            log err
-            return
-
-        try
-            tokenObj = JSON.parse fileContents
-            token    = tokenObj.token
-        catch e
-            token = fileContents
-                .replace /\r?\n|\r/, '' # Remove line endings
-                .replace /\w/, ''       # Remove Whitespace
-
-
-Initialize the lifx object wit our token. Now we are ready to send out
-some instructions!
-
-    lifx = new lifxObj token
-
-## Handy functions
-
-Get and set the status of the lights
-
-    getStatus = (cb=log) ->
-        log "Getting Status"
-        lifx.listLights 'all', cb
-
-Turn the lights on or off
-
-    power = (selector, state, duration=1.0, cb=log) ->
-
-        if (selector == '')
-            selector = "all"
-
-        if state?
-            nex = if state then "on" else "off"
-            log "turning bulbs #{nex}"
-            lifx.setPower selector, nex, duration, cb
-        else
-            log "toggling bulbs"
-            lifx.togglePower selector, cb
-
-Set a property of a bulb
-
-    setProp = (prop, sel="all", dur=1.0, power=false, cb=log) ->
-        log "Setting bulb(s) #{sel} to state #{prop}"
-        lifx.setColor sel, prop, dur, power, cb
-
-## Putting all the logic together
+    lifx = new lifxObj o.token
 
     if o.status?
-        getStatus()
+        lifx.listLights 'all', console.log
         return # Exit immediately
 
-## State modifications (Take Two)
+    log = (args) ->
+        console.log args
+        logFile = o.logFile or '/tmp/lifx-cli.log'
+        str     = "#{new Date()} #{args.join ' '}"
+        fs.appendFile logFile, str
+        if (o.verbose)
+            console.log str
 
-Listen all this stuff above me is all well and good, but how lame is it that we
-have to make multiple API calls for one command involving multiple attribute
-changes? Short answer: Really.
-
-Let's do something more tricky. How about an object that collects information
-about the next state change from the arguments, and applies them in one go
-using some opinions?
-
-Yeah!
-
-    class ColorState
-        constructor: (ops) ->
-            # A color name takes precedence, since we can extract information
-            # about brightness or saturation
-            obj = colorParser ops.color
-            if obj.hsl?
-                {@dur, @kel}       = ops
-                [@hue, @sat, @bri] = obj.hsl
-                @hue               = ops.hue if ops.hue?
-                @sat               = ops.sat if ops.sat?
-                @bri               = ops.bri if ops.bri?
-            else
-                # Get state from cli, Override color props if available
-                {@hue, @sat, @bri, @dur, @kel} = ops
-
-            @sat = @sat / 100 if @sat
-            @bri = @bri / 100 if @bri
-            @kel = ((@kel / 100) * 6500) + 2500 if @kel
-
-            # Selection
-            @sel = switch
-                when o.id?
-                    "id:#{o.id}"
-                when o.lab?
-                    "label:#{o.lab}"
-                when o.grp?
-                    "group:#{o.grp}"
-                when o.loc?
-                    "location:#{o.loc}"
-                else
-                    "all"
-
-        go: ->
-            changeString = ""
-            # I'm going to decide that kelvin always takes precedence. This
-            # means that if it is specified, then switch the lights over to a
-            # white based color, and ignore all the other color attributes
-            if @kel?
-                changeString += "kelvin:#{@kel}"
-            else
-                changeString += "hue:#{@hue} " if @hue?
-                changeString += "saturation:#{@sat} " if @sat?
-                changeString += "brightness:#{@bri} " if @bri?
-
-            if changeString.length > 0
-                log "Applying change to bulbs"
-                notify changeString
-                setProp changeString, @sel, @dur, o.on, log
-            else if o.toggle
-                notify "toggling lights"
-                power @sel
-            else if o.on or o.off
-                state = "on"  if o.on
-                state = "off" if o.off
-                notify "Turning lights #{state}"
-                # I'm going to let off take precedence
-                power @sel, (not o.off) && o.on
+    notify = (message) ->
+        notifier.notify {
+            title: 'Lifx-cli',
+            message: message,
+            icon: lifxclIcon
+            time: 1
+        }
 
 
+    # Selection
+    selection = switch
+        when o.id?
+            "id:#{o.id}"
+        when o.label?
+            "label:#{o.label}"
+        when o.group?
+            "group:#{o.group}"
+        when o.location?
+            "location:#{o.location}"
+        else
+            "all"
 
+    # Color State
+    parsedColor = colorParser o.color
 
+    if parsedColor.hsl?
+        [a, b, c]    = parsedColor.hsl
+        o.hue        = o.hue        or a
+        o.saturation = o.saturation or b
+        o.brightness = o.brightness or c
 
-    t = new ColorState(o)
-    log t
-    t.go()
+    o.saturation = o.saturation / 100 if o.saturation
+    o.brightness = o.brightness / 100 if o.brightness
+    o.kelvin     = ((o.kelvin / 100) * 6500) + 2500 if o.kelvin
+
+    # Create the color change string that we will feed into the API
+    changeString = ""
+
+    if o.kelvin?
+        changeString += "kelvin:#{o.kelvin}"
+    else
+        changeString += "hue:#{o.hue} " if o.hue?
+        changeString += "saturation:#{o.saturation} " if o.saturation?
+        changeString += "brightness:#{o.brightness} " if o.brightness?
+
+    setProp = (prop, sel="all", dur=1.0, power=false, cb=console.log) ->
+        lifx.setColor sel, prop, dur, power, cb
+
+    if changeString.length > 0
+        notify changeString
+        setProp changeString, selection, o.duration, o.on, console.log
+
+    if o.toggle?
+        notify "toggling lights"
+        lifx.togglePower selection, cb
+
+    else if o.off?
+        notify "Turning lights off"
+        lifx.setPower selection, "off", 1.0, console.log
+
+    else if o.on?
+        notify "Turning lights on"
+        lifx.setPower selection, "on", 1.0, console.log
 
