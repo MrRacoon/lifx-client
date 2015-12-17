@@ -38,6 +38,7 @@
             ['a'  ,  'status'         ,  'show the status of the lights'],
             ['o'  ,  'logFile=ARG'    ,  'specify a log file to use (default: /tmp/lifx-cli.log)' ],
             ['h'  ,  'help'           ,  'display this help'],
+            ['n'  ,  'notify'         ,  'provide a system notification with details about the changes']
             ['v'  ,  'verbose'        ,  'Log out verbose messages to the screen' ]
             [''   ,  'changeString'   ,  'Return the string that would be used in the Api to modify bulb state' ]
         ]
@@ -66,16 +67,17 @@
         logFile = o.logFile or '/tmp/lifx-cli.log'
         str     = "#{new Date()} #{args.join ' '}"
         fs.appendFile logFile, str
-        if (o.verbose)
+        if o.verbose?
             console.log str
 
     notify = (message) ->
-        notifier.notify {
-            title: 'Lifx-cli',
-            message: message,
-            icon: lifxclIcon
-            time: 1
-        }
+        if o.notify?
+            notifier.notify {
+                title: 'Lifx-cli',
+                message: message,
+                icon: lifxclIcon
+                time: 1
+            }
 
 
     # Selection

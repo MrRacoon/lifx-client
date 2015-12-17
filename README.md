@@ -20,6 +20,30 @@ npm install -g
 
 Should work. But as always I love a good issue.
 
+Usage
+-----
+
+turn all lights on;
+`lifxcli -1`
+
+turn all lights off:
+`lifxcli -0`
+
+turn group:Room on:
+`lifxcli -g 'Room' -1`
+
+turn group:Room to the color blue:
+`lifxcli -g 'Room' -C blue`
+
+turn group:Room to the color limegreen with a brightness of 20% and saturation of 42%:
+`lifxcli -g 'Room' -C limegreen -B 20 -S 42`
+
+Try using aliases:
+
+```bash
+alias room="lifxcli -g 'Room'"
+```
+
 Configuration
 -------------
 
