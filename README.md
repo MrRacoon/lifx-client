@@ -1,24 +1,20 @@
 lifx client
 ===========
 
-I love LIFX. Very fun to play with and plenty of acedemic challenges in making
-them work in fun ways. Here I've taken the taask of creating a node binary,
-wrritten in coffeescript.
+Big fan of home automation. And have to use javascript for work.
+
+so... lifxcli in coffeescript? Oh sure.
 
 Install
 -------
 
-Soon I will have this on npm, but until then...
+Soon I will have this on npm, but until then...email me hate mail...seriously make me do this.
 
 ```bash
-
 git clone https://github.com/MrRacoon/lifx-cli.git
 cd lifx-cli
 npm install -g
-
 ```
-
-Should work. But as always I love a good issue.
 
 Usage
 -----
@@ -47,17 +43,22 @@ alias room="lifxcli -g 'Room'"
 Configuration
 -------------
 
-The configuration for this app can be found at `~/.config/lifxcli`. The fle
-should contain a JSON object with your desired defaults.You only **Have To**
-specify only one option, which is the api token that you are given by the lifx
-website. This file will act as a set of defaults to any of the options below.
-Use the long format of the option (shown below) to save a default value.
+The config requires only one particular value and that is `token`. This should consist of the token you get from [the lifx cloud site](https://cloud.lifx.com/settings). Once you have that, throw it in the file `$HOME/.config/lifx`.
 
-For Example:
+
+The `$HOME/.config/lifx` file should be JSON and the token should be stored under `token` like such:
 
 ```json
 {
-    "token": "Your lifx token here",
+    "token": "aaaabbbbbbccccdddddeeeeefffffgggghhhhhiiiiijjjjjjkkkkkklllllmmmmm"
+}
+```
+
+This file can take any long argument setting that the cli `-h` documentation describes. The binary will take any of these options and use themm as default if they aren't provided when invokation occurs. For example, to use a `duration` of 2 seconds for any invokations by default use the following:
+
+```json
+{
+    "token": "aaaabbbbbbccccdddddeeeeefffffgggghhhhhiiiiijjjjjjkkkkkklllllmmmmm",
     "duration": 2
 }
 ```
@@ -89,7 +90,3 @@ Usage: node lifxcli
   -v, --verbose         Log out verbose messages to the screen
       --changeString    Return the string that would be used in the Api to modify bulb state
 ```
-
-If you like to read source, go [check it out][sauce]. It's wicked easy to read
-
-[sauce]: src/index.litcoffee 'Wicked easy to read'
