@@ -8,7 +8,11 @@ so... lifxcli in coffeescript? Oh sure.
 Install
 -------
 
-Soon I will have this on npm, but until then...email me hate mail...seriously make me do this.
+grab it from npm using:
+
+`npm install lifx-cli`
+
+or from source using:
 
 ```bash
 git clone https://github.com/MrRacoon/lifx-cli.git
