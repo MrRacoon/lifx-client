@@ -10,7 +10,7 @@ Install
 
 grab it from npm using:
 
-`npm install lifx-cli`
+`npm install lifx-client`
 
 or from source using:
 
