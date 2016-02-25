@@ -1,6 +1,8 @@
 lifx client
 ===========
 
+[![Dependency Status](https://david-dm.org/MrRacoon/lifx-client.svg)](https://david-dm.org/MrRacoon/lifx-client)
+
 Big fan of home automation. And have to use javascript for work.
 
 so... lifxcli in coffeescript? Oh sure.
