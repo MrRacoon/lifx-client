@@ -5,7 +5,7 @@
     lifxObj  = require 'lifx-api'
     notifier = require 'node-notifier'
     path     = require 'path'
-    R        = require 'ramda'
+    _        = require 'lodash/fp'
 
     colorParser = require 'parse-color'
 
@@ -48,10 +48,10 @@
 
     homeDirectory      = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
     defaultConfigFile  = commandlineConfig.config or homeDirectory + '/.config/lifxcli'
-    makeConfig         = R.compose JSON.parse, fs.readFileSync
+    makeConfig         = _.compose JSON.parse, fs.readFileSync
 
     try
-        o = R.merge (makeConfig defaultConfigFile), commandlineConfig
+        o = _.merge (makeConfig defaultConfigFile), commandlineConfig
     catch err
         console.log err
         return
