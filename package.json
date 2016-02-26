@@ -32,7 +32,7 @@
   "dependencies": {
     "lifx-api": "~1.0.1",
     "node-getopt": "~0.2.3",
-    "node-notifier": "~4.2.3",
+    "node-notifier": "~4.5.0",
     "parse-color": "~1.0.0",
     "ramda": "^0.18.0"
   },
