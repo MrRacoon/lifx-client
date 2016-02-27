@@ -101,6 +101,7 @@ Usage: node lifxcli
   -a, --status          show the status of the lights
   -o, --logFile=ARG     specify a log file to use (default: /tmp/lifx-cli.log)
   -h, --help            display this help
+  -n, --notify          provide a system notification with details about the changes
   -v, --verbose         Log out verbose messages to the screen
       --changeString    Return the string that would be used in the Api to modify bulb state
 ```
