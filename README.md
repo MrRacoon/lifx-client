@@ -1,6 +1,7 @@
 lifx client
 ===========
 
+[![npm version](https://badge.fury.io/js/lifx-client.svg)](https://badge.fury.io/js/lifx-client)
 [![Build Status](https://travis-ci.org/MrRacoon/lifx-client.svg?branch=master)](https://travis-ci.org/MrRacoon/lifx-client)
 [![Dependency Status](https://david-dm.org/MrRacoon/lifx-client.svg)](https://david-dm.org/MrRacoon/lifx-client)
 
