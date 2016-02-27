@@ -18,8 +18,14 @@ grab it from npm using:
 or from source using:
 
 ```bash
+# Get the repo from space
 git clone https://github.com/MrRacoon/lifx-cli.git
 cd lifx-cli
+
+# dependencies
+npm install -g gulp
+
+# Install into your global space
 npm install -g
 ```
 
