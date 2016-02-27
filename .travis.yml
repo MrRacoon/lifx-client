@@ -1,3 +1,7 @@
+language: node_js
+version:
+    - "4.1"
+    - "0.12"
 install:
     - npm install -g gulp
     - npm install
