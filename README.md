@@ -14,7 +14,7 @@ Install
 
 grab it from npm using:
 
-`npm install lifx-client`
+`npm install -g lifx-client`
 
 or from source using:
 
