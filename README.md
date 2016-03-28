@@ -57,10 +57,10 @@ alias room="lifxcli -g 'Room'"
 Configuration
 -------------
 
-The config requires only one particular value and that is `token`. This should consist of the token you get from [the lifx cloud site](https://cloud.lifx.com/settings). Once you have that, throw it in the file `$HOME/.config/lifx`.
+The config requires only one particular value and that is `token`. This should consist of the token you get from [the lifx cloud site](https://cloud.lifx.com/settings). Once you have that, throw it in the file `$HOME/.config/lifxcli`.
 
 
-The `$HOME/.config/lifx` file should be JSON and the token should be stored under `token` like such:
+The `$HOME/.config/lifxcli` file should be JSON and the token should be stored under `token` like such:
 
 ```json
 {
