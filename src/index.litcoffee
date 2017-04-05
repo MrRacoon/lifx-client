@@ -9,7 +9,7 @@
 
     colorParser = require 'parse-color'
 
-    lifxclIcon = path.join(__dirname + '/images/icon.png')
+    lifxclIcon = path.join(__dirname + '../images/icon.png')
 
     commandlineConfig = require 'node-getopt'
         .create [
@@ -134,4 +134,3 @@
     else if o.on?
         notify "Turning lights on"
         lifx.setPower selection, "on", 1.0, console.log
-
