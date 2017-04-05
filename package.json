@@ -21,7 +21,9 @@
     "url": "https://github.com/MrRacoon/lifx-cli/issues"
   },
   "bin": {
-    "lifxcli": "bin/lifxcli"
+    "lifx-client": "bin/lifx-client",
+    "lifxcli": "bin/lifx-client",
+    "lifx": "bin/lifx-client"
   },
   "lib": {
     "index": "lib/index.js"
