@@ -8,16 +8,7 @@ import getopt from 'node-getopt'
 
 const icon = path.join(__dirname + '../images/icon.png')
 
-const log = (...args) => {
-  console.log('...args', ...args);
-  // if (args.length) {
-  //   console.log(...args)
-  //   const str = [new Date(), ...args].join(' ')
-  //   if (o.verbose) { console.log(str) }
-  // }
-  // const logFile = o.logFile || '/tmp/lifx-cli.log'
-  // fs.appendFile logFile, str
-}
+const log = console.log.bind(console)
 
 const commandlineConfig = getopt.create([
     ['c'  ,  'config=ARG'     ,  'Provide a lifxcli configuration file path for setting default settings'],
@@ -65,16 +56,16 @@ let o
 try {
   o = _.merge(makeConfig(defaultConfigFile), commandlineConfig)
 } catch (err) {
-  console.log(err)
+  log(err)
   process.exit(1)
 }
 
 const lifx = new lifxObj(o.token)
 
-console.log('status');
+log('status');
 if (o.status) {
   try {
-    lifx.listLights('all', body => console.log('body', body))
+    lifx.listLights('all', body => log('body', body))
     process.exit(0)
   } catch (e) {
     console.error(e);
