@@ -31,7 +31,7 @@ const commandlineConfig = getopt.create([
     // Mods
     ['d', 'duration=ARG', 'duration to make the change'],
     // Utility
-    ['s', 'status', 'show the status of the lights'],
+    ['a', 'status', 'show the status of the lights'],
     ['o', 'logFile=ARG', 'specify a log file to use (default: /tmp/lifx-cli.log)'],
     ['h', 'help', 'display this help'],
     ['n', 'notify', 'provide a system notification with details about the changes'],
