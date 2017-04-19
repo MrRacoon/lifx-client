@@ -1,0 +1,19 @@
+import fetch from 'isomorphic-fetch'
+
+export default function setState (info) {
+  const {
+    token, selector = 'all', power, color, brightness, infrared, duration
+  } = info
+  if (!color && !power) { return info }
+  console.log('setting state')
+
+  const path = `https://api.lifx.com/v1/lights/${selector}/state`
+  const method = 'PUT'
+  const headers = { 'Authorization': `Bearer ${token}` }
+  const body = JSON.stringify({ power, color, brightness, infrared, duration })
+
+  return fetch(path, { method, headers, body })
+    .then(res => res.json())
+    .then(json => ({ type: 'setState', json }))
+    .then(Promise.reject)
+}
