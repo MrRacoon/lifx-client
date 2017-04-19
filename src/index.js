@@ -1,9 +1,7 @@
 import getopt from 'node-getopt'
 import rc from 'rc-yaml'
 
-// import notify from './utils/notify'
-// import { listLights, setState, togglePower } from './effects'
-import choices from './effects'
+import effects from './effects'
 import options from './options'
 
 const APP_NAME = 'lifx'
@@ -49,11 +47,8 @@ if (!opts.token) {
   process.exit(1)
 }
 
-// =============================================================================
-
 opts.verbose && console.log('opts', opts)
-
-choices.reduce(
+effects.reduce(
   (prom, fn) => prom.then(fn),
   Promise.resolve(opts)
 ).catch(msg => {
