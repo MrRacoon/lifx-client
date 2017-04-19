@@ -1,11 +1,10 @@
-import colorParser from 'parse-color'
-
 import getopt from 'node-getopt'
 import rc from 'rc-yaml'
 
 // import notify from './utils/notify'
 // import { listLights, setState, togglePower } from './effects'
 import choices from './effects'
+import options from './options'
 
 const APP_NAME = 'lifx'
 
@@ -43,84 +42,21 @@ const commandlineConfig = getopt.create([
   .options
 
 const o = Object.assign(rc(APP_NAME), commandlineConfig)
+const opts = options(o)
 
-if (!o.token) {
+if (!opts.token) {
   console.log('Please provide a token, try lifx -h for more info')
   process.exit(1)
 }
 
 // =============================================================================
 
-const hsl = ((colorParser(o.color) || {}).hsl || [])
-
-const hue = o.hue || hsl[0] || undefined
-const saturation = (o.saturation || hsl[1]) / 100 || undefined
-const brightness = (o.brightness || hsl[2]) / 100 || undefined
-const kelvin = (o.kelvin) * 65 || undefined
-
-const colorString =
-  (hue ? `hue:${hue} ` : '') +
-  (saturation ? `saturation:${saturation} ` : '') +
-  (brightness ? `brightness:${brightness} ` : '') +
-  (kelvin ? `kelvin:${kelvin} ` : '')
-
-const selection = (o.id && `id:${o.id}`) ||
-  (o.label && `label:${o.label}`) ||
-  (o.group && `group:${o.group}`) ||
-  (o.location && `location:${o.location}`) ||
-  'all'
-
-const info = {
-  token: o.token,
-  verbose: o.verbose,
-  status: o.status,
-  toggle: o.toggle,
-  notify: o.notify,
-  selection,
-  color: colorString,
-  brightness,
-  duration: o.duration || 0,
-  infrared: o.infrared,
-  kelvin: o.kelvin,
-  power: o.on ? 'on' : o.off ? 'off' : undefined
-}
+opts.verbose && console.log('opts', opts)
 
 choices.reduce(
   (prom, fn) => prom.then(fn),
-  Promise.resolve(info)
+  Promise.resolve(opts)
 ).catch(msg => {
   console.log(msg)
   return msg
 })
-
-// // Selection
-// const selection =
-//   (o.id && `id:${o.id}`) ||
-//   (o.label && `label:${o.label}`) ||
-//   (o.group && `group:${o.group}`) ||
-//   (o.location && `location:${o.location}`) ||
-//   "all"
-//
-// // Color State
-// const parsedColor = colorParser(o.color)
-//
-// console.log('parsedColor', parsedColor);
-//
-// const [a, b, c] = parsedColor.hsl
-// const { hue = a, saturation = b, brightness = c } = o
-//
-// if (changeString.length > 0) {
-//   o.notify && notify(changeString)
-//   lifx.setColor(selection, changeString, o.duration, o.on, log)
-// }
-//
-// if (o.toggle) {
-//   o.notify && notify("Toggling lights")
-//   lifx.togglePower(selection, log)
-// } else if (o.off) {
-//   o.notify && notify("Turning lights off")
-//   lifx.setPower(selection, "off", 1.0, log)
-// } else if (o.on) {
-//   o.notify && notify("Turning lights on")
-//   lifx.setPower(selection, "on", 1.0, log)
-// }

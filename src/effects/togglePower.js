@@ -1,8 +1,5 @@
 import fetch from 'isomorphic-fetch'
 
-// curl -X POST "https://api.lifx.com/v1/lights/all/toggle" \
-//      -H "Authorization: Bearer YOUR_APP_TOKEN"
-
 export default function togglePower (info) {
   const { token, toggle, selector, duration } = info
   if (!toggle) { return info }
@@ -14,5 +11,5 @@ export default function togglePower (info) {
   return fetch(path, { method, headers, body })
     .then(res => res.json())
     .then(json => ({ type: 'togglePower', json }))
-    .then(Promise.reject)
+    .then(msg => Promise.reject(msg))
 }
