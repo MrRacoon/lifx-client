@@ -2,7 +2,7 @@ import fetch from 'isomorphic-fetch'
 
 export default function setState (info) {
   const {
-    token, selector = 'all', power, color, brightness, infrared, duration
+    token, selector, power, color, infrared, duration
   } = info
   if (!color && !power) { return info }
   console.log('setting state')
@@ -11,7 +11,7 @@ export default function setState (info) {
   const method = 'PUT'
   const headers = { 'Authorization': `Bearer ${token}` }
   const body = JSON.stringify({
-    power, color, /* brightness, */ infrared, duration
+    power, color, infrared, duration
   })
 
   return fetch(path, { method, headers, body })

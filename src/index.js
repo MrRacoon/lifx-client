@@ -27,6 +27,7 @@ const commandlineConfig = getopt.create([
     ['p', 'location=ARG', 'select bulb(s) by location name'],
     // Mods
     ['d', 'duration=ARG', 'duration to make the change'],
+    ['b', 'breathe', 'make the lights do a breathe effect'],
     // Utility
     ['a', 'status', 'show the status of the lights'],
     ['o', 'logFile=ARG', 'specify a log file to use (default: /tmp/lifx-cli.log)'],
@@ -48,10 +49,13 @@ if (!opts.token) {
 }
 
 opts.verbose && console.log('opts', opts)
+
 effects.reduce(
   (prom, fn) => prom.then(fn),
   Promise.resolve(opts)
-).catch(msg => {
+).then(opts => {
+  return Promise.reject({ type: 'no match', opts }) // eslint-disable-line
+}).catch(msg => {
   console.log(msg)
   return msg
 })

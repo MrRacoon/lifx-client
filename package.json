@@ -11,10 +11,10 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "lint": "eslint src/*.js",
+    "lint": "eslint 'src/**/*.js'",
     "build": "npm run clean; babel --out-dir=dist src",
     "test": "lifxcli -a && lifx -C green && lifx -C yellow && lifx -C white",
-    "prepublish": "npm run build",
+    "prepublish": "npm run lint && npm run build",
     "watch": "npm-scripts-watcher"
   },
   "watch": {

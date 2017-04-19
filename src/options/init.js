@@ -9,7 +9,8 @@ export default function init (opts) {
       duration: opts.duration || 0,
       infrared: opts.infrared,
       kelvin: opts.kelvin,
-      power: opts.on ? 'on' : opts.off ? 'off' : undefined
+      power: opts.on ? 'on' : opts.off ? 'off' : undefined,
+      breathe: opts.breathe
     })
   }
 }
