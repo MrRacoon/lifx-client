@@ -37,7 +37,7 @@
   "dependencies": {
     "isomorphic-fetch": "^2.2.1",
     "node-getopt": "~0.2.3",
-    "node-notifier": "~4.5.0",
+    "node-notifier": "^5.1.2",
     "parse-color": "~1.0.0",
     "rc-yaml": "^2.0.0"
   },
