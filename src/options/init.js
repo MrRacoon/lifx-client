@@ -9,7 +9,8 @@ export default function init (opts) {
       'breate', 'pulse',
       'from', 'cycles', 'persist', 'peak',
       'scene', 'listScenes',
-      'status', 'notify', 'verbose'
+      'status', 'notify',
+      'verbose', 'version'
     ]), {
       power: opts.on ? 'on' : opts.off ? 'off' : undefined,
       duration: +(opts.duration || 0),

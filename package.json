@@ -13,7 +13,7 @@
     "clean": "rm -rf dist",
     "lint": "eslint 'src/**/*.js'",
     "build": "npm run clean; babel --out-dir=dist src",
-    "test": "lifx -v && lifxcli -v && lifx-client -v",
+    "test": "lifx -V && lifxcli -V && lifx-client -V",
     "prepublish": "npm run lint && npm run build"
   },
   "repository": {

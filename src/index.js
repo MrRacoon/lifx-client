@@ -1,6 +1,7 @@
 import getopt from 'node-getopt'
 import rc from 'rc-yaml'
 
+import notify from './utils/notify'
 import effects from './effects'
 import options from './options'
 
@@ -41,7 +42,8 @@ const commandlineConfig = getopt.create([
   ['a', 'status', 'show the status of the lights'],
   ['h', 'help', 'display this help'],
   ['n', 'notify', 'provide a system notification with details about the changes'],
-  ['v', 'verbose', 'Log out verbose messages to the screen']
+  ['v', 'verbose', 'Log out verbose messages to the screen'],
+  ['V', 'version', 'show the current version']
 ])
   .bindHelp()
   .parseSystem()
@@ -50,7 +52,13 @@ const commandlineConfig = getopt.create([
 const o = Object.assign(rc(APP_NAME), commandlineConfig)
 const opts = options(o)
 
-opts.debug && console.log('opts', opts)
+opts.verbose && console.log('opts', opts)
+
+if (opts.version) {
+  const packageJson = require('../package.json')
+  console.log('lifx-client version:', packageJson.version)
+  process.exit(0)
+}
 
 if (!opts.token) {
   console.log('Please provide a token, try lifx -h for more info')
@@ -61,10 +69,11 @@ effects.reduce(
   (prom, fn) => prom.then(fn),
   Promise.resolve(opts)
 )
-.then(opts2 => {
-  return Promise.reject({ type: 'no match', opts2 }) // eslint-disable-line
+.then(json => {
+  return Promise.reject({ type: 'no match', json }) // eslint-disable-line
 })
 .catch(msg => {
   console.log(JSON.stringify(msg, null, 2))
+  opts.notify && notify(opts, msg)
   return msg
 })
