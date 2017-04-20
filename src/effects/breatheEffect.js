@@ -5,7 +5,10 @@ import fetch from 'isomorphic-fetch'
 //      -d 'cycles=5' \
 //      -d 'color=green'
 export default function breatheEffect (opts) {
-  const { token, selector, breathe, color } = opts
+  const {
+    token, selector, breathe,
+    color, from, period, cycles, persist, power
+  } = opts
 
   if (!breathe || !color) { return opts }
 
@@ -13,9 +16,15 @@ export default function breatheEffect (opts) {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${token}` },
     body: JSON.stringify({
-      color
+      color,
+      'from_color': from,
+      period,
+      cycles,
+      persist,
+      power
     })
   })
   .then(resp => resp.json())
-  .then(json => Promise.reject(json))
+  .then(json => ({ type: 'breatheEffect', json }))
+  .then(msg => Promise.reject(msg))
 }
