@@ -16,10 +16,10 @@ const commandlineConfig = getopt.create([
   // Attributes
   ['C', 'color=STRING', 'set color (blue, red, pink...)'],
   ['H', 'hue=FLOAT', 'set color using hue (0-360)'],
-  ['K', 'kelvin=FLOAT', 'set kelvin (2500-9000)'],
-  ['B', 'brightness=FLOAT', 'set brightness (0.0-1.0)'],
-  ['S', 'saturation=FLOAT', 'set saturation (0.0-1.0)'],
-  ['I', 'infrared=FLOAT', 'set infrared (0.0-1.0)'],
+  ['K', 'kelvin=FLOAT', 'set kelvin (0-100)'],
+  ['B', 'brightness=FLOAT', 'set brightness (0-100)'],
+  ['S', 'saturation=FLOAT', 'set saturation (0-100)'],
+  ['I', 'infrared=FLOAT', 'set infrared (0-100)'],
   // Selectors
   ['i', 'id=STRING', 'select bulb(s) by id'],
   ['l', 'label=STRING', 'select bulb(s) by label'],

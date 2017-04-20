@@ -3,9 +3,6 @@ export default function init (opts) {
     return Object.assign({}, obj, {
       token: opts.token,
 
-      infrared: opts.infrared,
-      kelvin: opts.kelvin,
-
       breathe: opts.breathe,
       pulse: opts.pulse,
 

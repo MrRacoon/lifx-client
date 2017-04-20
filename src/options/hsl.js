@@ -2,7 +2,7 @@ import colorParser from 'parse-color'
 
 export default function hsl (opts) {
   return function _hsl (obj) {
-    const { color, hue, saturation, brightness, kelvin } = opts
+    const { color, hue, saturation, brightness, kelvin, infrared } = opts
     const hsl = ((colorParser(color) || {}).hsl || [])
 
     let ret = {}
@@ -21,6 +21,10 @@ export default function hsl (opts) {
 
     if (typeof kelvin !== 'undefined') {
       ret.kelvin = (kelvin * 65) + 2500
+    }
+
+    if (typeof infrared !== 'undefined') {
+      ret.kelvin = infrared / 100
     }
 
     return Object.assign({}, obj, ret)
