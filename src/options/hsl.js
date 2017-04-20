@@ -23,6 +23,8 @@ export default function hsl (opts) {
       ret.kelvin = (kelvin || hsl[2]) * 65
     }
 
+    console.log('ret', ret)
+
     return Object.assign({}, obj, ret)
   }
 }
