@@ -20,7 +20,7 @@ export default function hsl (opts) {
     }
 
     if (typeof kelvin !== 'undefined') {
-      ret.kelvin = (kelvin || hsl[2]) * 65
+      ret.kelvin = (kelvin * 65) + 2500
     }
 
     return Object.assign({}, obj, ret)
