@@ -4,15 +4,12 @@ import fetch from 'isomorphic-fetch'
  * @param  {String} token The api token
  * @return {Promise<(Response|Error)>}       [description]
  */
-export default function listLights (info) {
-  info.verbose && console.log('info', info)
-  if (!info.status) { return info }
-
-  info.verbose && console.log('listing nodes')
-  const { token } = info
+export default function listLights (opts) {
+  const { token, status, selector } = opts
+  if (!status) { return opts }
 
   const method = 'GET'
-  const path = 'https://api.lifx.com/v1/lights/all'
+  const path = `https://api.lifx.com/v1/lights/${selector}`
   const headers = { 'Authorization': `Bearer ${token}` }
 
   return fetch(path, { method, headers })
