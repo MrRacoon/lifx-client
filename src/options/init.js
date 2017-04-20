@@ -1,26 +1,19 @@
+const pick = (obj, elems) =>
+  elems.reduce((acc, k) => Object.assign({}, acc, { [k]: obj[k] }), {})
+
 export default function init (opts) {
   return function _init (obj) {
-    return Object.assign({}, obj, {
-      token: opts.token,
-
-      breathe: opts.breathe,
-      pulse: opts.pulse,
-
-      from: opts.from,
-      cycles: opts.cycles,
-      persist: opts.persist,
-      duration: +(opts.duration || 0),
-      period: +(opts.duration || 0),
-      peak: opts.peak,
-
-      scene: opts.listScenes,
-      listScenes: opts.listScenes,
-
-      status: opts.status,
-      notify: opts.notify,
+    return Object.assign({}, obj, pick(opts, [
+      'token',
+      'toggle',
+      'breate', 'pulse',
+      'from', 'cycles', 'persist', 'peak',
+      'scene', 'listScenes',
+      'status', 'notify', 'verbose'
+    ]), {
       power: opts.on ? 'on' : opts.off ? 'off' : undefined,
-      toggle: opts.toggle,
-      verbose: opts.verbose
+      duration: +(opts.duration || 0),
+      period: +(opts.duration || 0)
     })
   }
 }

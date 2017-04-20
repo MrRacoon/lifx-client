@@ -13,14 +13,8 @@
     "clean": "rm -rf dist",
     "lint": "eslint 'src/**/*.js'",
     "build": "npm run clean; babel --out-dir=dist src",
-    "test": "lifxcli -a && lifx -C green && lifx -C yellow && lifx -C white",
-    "prepublish": "npm run lint && npm run build",
-    "watch": "npm-scripts-watcher"
-  },
-  "watch": {
-    "src/*.babel.js": [
-      "build"
-    ]
+    "test": "lifx -v && lifxcli -v && lifx-client -v",
+    "prepublish": "npm run lint && npm run build"
   },
   "repository": {
     "type": "git",
@@ -41,10 +35,7 @@
     "node": ">= 0.10.0"
   },
   "dependencies": {
-    "coffee-script": "^1.10.0",
     "isomorphic-fetch": "^2.2.1",
-    "lifx-api": "~1.0.1",
-    "lodash": "^4.5.1",
     "node-getopt": "~0.2.3",
     "node-notifier": "~4.5.0",
     "parse-color": "~1.0.0",
@@ -60,10 +51,7 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-node": "^4.2.2",
     "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "gulp": "~3.9.0",
-    "gulp-coffee": "~2.3.1",
-    "npm-scripts-watcher": "^1.0.2"
+    "eslint-plugin-standard": "^3.0.1"
   },
   "babel": {
     "presets": [

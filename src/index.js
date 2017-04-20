@@ -33,7 +33,7 @@ const commandlineConfig = getopt.create([
   ['P', 'persist', 'If true leave the last effect color. (breathe, pulse)'],
   ['f', 'from=ARG', 'The color to start the effect from. defaults to current color (breathe, pulse)'],
   ['y', 'cycles=FLOAT', 'The number of times to repeat the effect. (breathe, pulse)'],
-  ['y', 'peak=FLOAT', 'Defines where in a period the target color is at its maximum. (breathe)'],
+  ['e', 'peak=FLOAT', 'Defines where in a period the target color is at its maximum. (breathe)'],
   // scenet
   ['c', 'scene=UUID', 'activate the scene via uuid'],
   ['', 'listScenes', 'show the currently known set of scenes'],
@@ -47,15 +47,15 @@ const commandlineConfig = getopt.create([
   .parseSystem()
   .options
 
-const o = Object.assign({}, rc(APP_NAME), commandlineConfig)
+const o = Object.assign(rc(APP_NAME), commandlineConfig)
 const opts = options(o)
+
+opts.debug && console.log('opts', opts)
 
 if (!opts.token) {
   console.log('Please provide a token, try lifx -h for more info')
   process.exit(1)
 }
-
-opts.verbose && console.log('opts', opts)
 
 effects.reduce(
   (prom, fn) => prom.then(fn),
