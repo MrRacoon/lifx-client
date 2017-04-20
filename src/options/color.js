@@ -19,8 +19,6 @@ export default function color (opts) {
       color += `kelvin:${kelvin} `
     }
 
-    console.log('color', color)
-
     return Object.assign({}, obj, { color })
   }
 }

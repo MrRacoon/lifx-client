@@ -7,12 +7,14 @@ export default function init (opts) {
       kelvin: opts.kelvin,
 
       breathe: opts.breathe,
+      pulse: opts.pulse,
 
       from: opts.from,
       cycles: opts.cycles,
       persist: opts.persist,
       duration: +(opts.duration || 0),
       period: +(opts.duration || 0),
+      peak: opts.peak,
 
       scene: opts.listScenes,
       listScenes: opts.listScenes,

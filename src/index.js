@@ -27,11 +27,13 @@ const commandlineConfig = getopt.create([
   ['L', 'location=STRING', 'select bulb(s) by location name'],
   // Routines
   ['b', 'breathe', 'make the lights do a breathe effect'],
+  ['p', 'pulse', 'make the lights do a pulse effect'],
   // Mods
-  ['p', 'persist', 'finish the routine with the to_color (breathe)'],
-  ['f', 'from=ARG', 'color to start the routine with (breathe)'],
-  ['d', 'duration=FLOAT', 'duration/periods to make the change'],
-  ['y', 'cycles=FLOAT', 'number of cycles (breathe)'],
+  ['d', 'duration=FLOAT', 'duration/period of time for transitions'],
+  ['P', 'persist', 'If true leave the last effect color. (breathe, pulse)'],
+  ['f', 'from=ARG', 'The color to start the effect from. defaults to current color (breathe, pulse)'],
+  ['y', 'cycles=FLOAT', 'The number of times to repeat the effect. (breathe, pulse)'],
+  ['y', 'peak=FLOAT', 'Defines where in a period the target color is at its maximum. (breathe)'],
   // scenet
   ['c', 'scene=UUID', 'activate the scene via uuid'],
   ['', 'listScenes', 'show the currently known set of scenes'],

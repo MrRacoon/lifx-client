@@ -1,18 +1,18 @@
 import fetch from 'isomorphic-fetch'
-// curl -X POST "https://api.lifx.com/v1/lights/all/effects/breathe" \
+// curl -X POST "https://api.lifx.com/v1/lights/all/effects/pulse" \
 //      -H "Authorization: Bearer YOUR_APP_TOKEN" \
 //      -d 'period=2' \
 //      -d 'cycles=5' \
 //      -d 'color=green'
 export default function breatheEffect (opts) {
   const {
-    token, selector, breathe,
-    color, from, period, cycles, persist, power, peak
+    token, selector, pulse,
+    color, from, period, cycles, persist, power
   } = opts
 
-  if (!breathe || !color) { return opts }
+  if (!pulse || !color) { return opts }
 
-  return fetch(`https://api.lifx.com/v1/lights/${selector}/effects/breathe`, {
+  return fetch(`https://api.lifx.com/v1/lights/${selector}/effects/pulse`, {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${token}` },
     body: JSON.stringify({
@@ -21,11 +21,10 @@ export default function breatheEffect (opts) {
       period,
       cycles,
       persist,
-      power_on: power,
-      peak
+      power_on: power
     })
   })
   .then(resp => resp.json())
-  .then(json => ({ type: 'breatheEffect', json }))
+  .then(json => ({ type: 'pulseEffect', json }))
   .then(msg => Promise.reject(msg))
 }
