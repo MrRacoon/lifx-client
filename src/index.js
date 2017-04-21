@@ -32,7 +32,7 @@ const commandlineConfig = getopt.create([
   // Mods
   ['d', 'duration=FLOAT', 'duration/period of time for transitions'],
   ['P', 'persist', 'If true leave the last effect color. (breathe, pulse)'],
-  ['f', 'from=ARG', 'The color to start the effect from. defaults to current color (breathe, pulse)'],
+  ['f', 'from=STRING', 'The color to start the effect from. defaults to current color (breathe, pulse)'],
   ['y', 'cycles=FLOAT', 'The number of times to repeat the effect. (breathe, pulse)'],
   ['e', 'peak=FLOAT', 'Defines where in a period the target color is at its maximum. (breathe)'],
   // scenet
