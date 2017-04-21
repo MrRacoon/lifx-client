@@ -1,9 +1,4 @@
 import fetch from 'isomorphic-fetch'
-// curl -X POST "https://api.lifx.com/v1/lights/all/effects/breathe" \
-//      -H "Authorization: Bearer YOUR_APP_TOKEN" \
-//      -d 'period=2' \
-//      -d 'cycles=5' \
-//      -d 'color=green'
 export default function breatheEffect (opts) {
   const {
     token, selector, breathe,
@@ -17,7 +12,7 @@ export default function breatheEffect (opts) {
     headers: { 'Authorization': `Bearer ${token}` },
     body: JSON.stringify({
       color,
-      'from_color': from,
+      from_color: from,
       period,
       cycles,
       persist,

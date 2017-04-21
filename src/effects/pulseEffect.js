@@ -17,7 +17,7 @@ export default function breatheEffect (opts) {
     headers: { 'Authorization': `Bearer ${token}` },
     body: JSON.stringify({
       color,
-      'from_color': from,
+      from_color: from,
       period,
       cycles,
       persist,
