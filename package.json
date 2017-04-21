@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "lint": "eslint src/**/*.js",
+    "lint": "standard 'src/**/*.js' --fix",
     "build": "npm run clean; babel --out-dir=dist src",
     "test": "npm run lint && npm run build && node ./index.js -V",
     "prepublish": "npm run lint && npm run build"
@@ -44,16 +44,9 @@
     "rc-yaml": "^2.0.0"
   },
   "devDependencies": {
-    "babel": "^6.23.0",
     "babel-cli": "^6.24.0",
-    "babel-core": "^6.24.0",
     "babel-preset-es2015": "^6.24.0",
-    "eslint": "^3.19.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-node": "^4.2.2",
-    "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-standard": "^3.0.1"
+    "standard": "^10.0.2"
   },
   "babel": {
     "presets": [
