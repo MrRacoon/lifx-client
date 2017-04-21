@@ -19,21 +19,29 @@ Usage
 -----
 
 turn all lights on;
+
 `lifx -1`
 
 turn all lights off:
+
 `lifx -0`
 
 turn group:Room on:
+
 `lifx -g 'Room' -1`
 
 turn group:Room to the color blue:
+
 `lifx -g 'Room' -C blue`
 
-turn group:Room to the color limegreen with a brightness of 20% and saturation of 42%:
+turn group:Room to the color limegreen with a brightness of 20% and saturation
+of 42%:
+
 `lifx -g 'Room' -C limegreen -B 20 -S 42`
 
-pulse group:Room to the color limegreen from the color red with a brightness of 20% and saturation of 42%:
+pulse group:Room to the color limegreen from the color red with a brightness of
+20% and saturation of 42%:
+
 `lifx -g 'Room' -p -C limegreen -f red -B 20 -S 42`
 
 Try using aliases:
