@@ -31,6 +31,9 @@ turn group:Room to the color blue:
 turn group:Room to the color limegreen with a brightness of 20% and saturation of 42%:
 `lifx -g 'Room' -C limegreen -B 20 -S 42`
 
+pulse group:Room to the color limegreen from the color red with a brightness of 20% and saturation of 42%:
+`lifx -g 'Room' -p -C limegreen -f red -B 20 -S 42`
+
 Try using aliases:
 
 ```bash
@@ -42,37 +45,45 @@ Configuration
 
 This client uses `rc-yaml` to grab config options. you can use `rc` files for specifying default cli arguments.
 
-( The *best* option to put here is `token` )
+( I'd suggest saving your `token` here )
 
 ```yml
 token: [LIFX_API_TOKEN]
+duration: 2 // default the duration to 2 seconds  
 ```
 
 command line args
 -----------------
 
 ```bash
-Usage: node lifxcli
+Usage: node lifx
 
-  -c, --config=ARG      Provide a lifxcli configuration file path for setting default settings
-  -k, --token=ARG       the token in plainText
-  -T, --toggle          toggle the power of the bulbs
-  -1, --on              turn on the lights
-  -0, --off             turn off the lights
-  -C, --color=ARG       set color (blue, red, pink...)
-  -H, --hue=ARG         set color using hue (0-360)
-  -K, --kelvin=ARG      set kelvin (2500-9000)
-  -B, --brightness=ARG  set brightness (0.0-1.0)
-  -S, --saturation=ARG  set saturation (0.0-1.0)
-  -i, --id=ARG          select bulb(s) by id
-  -l, --label=ARG       select bulb(s) by label
-  -g, --group=ARG       select bulb(s) by group name
-  -p, --location=ARG    select bulb(s) by location name
-  -d, --duration=ARG    duration to make the change
-  -a, --status          show the status of the lights
-  -o, --logFile=ARG     specify a log file to use (default: /tmp/lifx-cli.log)
-  -h, --help            display this help
-  -n, --notify          provide a system notification with details about the changes
-  -v, --verbose         Log out verbose messages to the screen
-      --changeString    Return the string that would be used in the Api to modify bulb state
+  -k, --token=STRING      the token in plainText
+  -T, --toggle            toggle the power of the bulbs
+  -1, --on                turn on the lights
+  -0, --off               turn off the lights
+  -C, --color=STRING      set color (blue, red, pink...)
+  -H, --hue=FLOAT         set color using hue (0-360)
+  -K, --kelvin=FLOAT      set kelvin (0-100)
+  -B, --brightness=FLOAT  set brightness (0-100)
+  -S, --saturation=FLOAT  set saturation (0-100)
+  -I, --infrared=FLOAT    set infrared (0-100)
+  -i, --id=STRING         select bulb(s) by id
+  -l, --label=STRING      select bulb(s) by label
+  -g, --group=STRING      select bulb(s) by group name
+  -L, --location=STRING   select bulb(s) by location name
+  -b, --breathe           make the lights do a breathe effect
+  -p, --pulse             make the lights do a pulse effect
+  -d, --duration=FLOAT    duration/period of time for transitions
+  -P, --persist           If true leave the last effect color. (breathe, pulse)
+  -f, --from=ARG          The color to start the effect from. defaults to current color (breathe, pulse)
+  -y, --cycles=FLOAT      The number of times to repeat the effect. (breathe, pulse)
+  -e, --peak=FLOAT        Defines where in a period the target color is at its maximum. (breathe)
+  -c, --scene=UUID        activate the scene via uuid
+      --listScenes        show the currently known set of scenes
+  -a, --status            show the status of the lights
+  -h, --help              display this help
+  -n, --notify            provide a system notification with details about the changes
+  -v, --verbose           Log out verbose messages to the screen
+  -V, --version           show the current version
 ```
