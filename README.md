@@ -5,6 +5,7 @@ lifx client
 [![npm version](https://badge.fury.io/js/lifx-client.svg)](https://badge.fury.io/js/lifx-client)
 [![Build Status](https://travis-ci.org/MrRacoon/lifx-client.svg?branch=master)](https://travis-ci.org/MrRacoon/lifx-client)
 [![Dependency Status](https://david-dm.org/MrRacoon/lifx-client.svg)](https://david-dm.org/MrRacoon/lifx-client)
+[![Known Vulnerabilities](https://snyk.io/test/github/MrRacoon/lifx-client/0d8d49df8b7111af08b7bfbd6dc4b1665505da45/badge.svg)](https://snyk.io/test/github/MrRacoon/lifx-client/0d8d49df8b7111af08b7bfbd6dc4b1665505da45)
 
 Control your lifx system through the command line.
 
