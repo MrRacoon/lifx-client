@@ -15,7 +15,7 @@
     "clean": "rm -rf dist",
     "lint": "eslint src/**/*.js",
     "build": "npm run clean; babel --out-dir=dist src",
-    "test": "npm run build && npm run lint && lifx -V",
+    "test": "npm run lint && npm run build && node ./index.js -V",
     "prepublish": "npm run lint && npm run build"
   },
   "repository": {
