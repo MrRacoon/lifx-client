@@ -1,4 +1,4 @@
-![lifx-icon](images/icon.png =100x)
+![lifx-icon](images/icon.png)
 
 lifx client
 ===========
