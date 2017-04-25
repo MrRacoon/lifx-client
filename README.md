@@ -1,4 +1,4 @@
-<img src="./images/icon.png" height="100" />
+<img src="images/icon.png" height="100" />
 
 lifx client
 ===========
