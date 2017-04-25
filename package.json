@@ -1,6 +1,6 @@
 {
   "name": "lifx-client",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "description": "A cli application for talking to the official lifx api",
   "main": "index.js",
   "author": "Erik Sutherland",
