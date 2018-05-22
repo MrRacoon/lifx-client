@@ -53,7 +53,11 @@ alias room="lifxcli -g 'Room'"
 Configuration
 -------------
 
-This client uses `rc-yaml` to grab config options. you can use `rc` files for specifying default cli arguments.
+This client uses `rc-yaml` to grab config options. you can use `rc` files for
+specifying default cli arguments. `rc` will look for rc files with the name
+`.lifxrc`, so for instance you can store your lifx config in `~/.lifxrc`.
+
+More info on where `rc` looks is available [here](https://www.npmjs.com/package/rc#standards).
 
 ( I'd suggest saving your `token` here )
 
