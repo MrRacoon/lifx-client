@@ -6,9 +6,9 @@ export default function activateScene (opts) {
   if (!scene) { return opts }
 
   return fetch(`https://api.lifx.com/v1/scenes/scene_id:${scene}/activate`, {
-    method: 'GET',
+    method: 'PUT',
     headers: { 'Authorization': `Bearer ${token}` },
-    body: { duration }
+    body: JSON.stringify({ duration })
   })
   .then(resp => resp.json())
   .then(json => ({ type: 'activateScene', json }))

@@ -19,7 +19,7 @@ export default function breatheEffect (opts) {
       color,
       from_color: from,
       period,
-      cycles,
+      cycles: +cycles,
       persist,
       power_on: power
     })

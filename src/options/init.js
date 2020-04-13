@@ -6,7 +6,7 @@ export default function init (opts) {
     return Object.assign({}, obj, pick(opts, [
       'token',
       'toggle',
-      'breathe', 'pulse',
+      'breathe', 'pulse', 'effectOff',
       'from', 'cycles', 'persist', 'peak',
       'scene', 'listScenes',
       'status', 'notify',

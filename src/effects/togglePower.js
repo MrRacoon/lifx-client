@@ -6,7 +6,7 @@ export default function togglePower (opts) {
   opts.verbose && console.log('toggling')
 
   return fetch(`https://api.lifx.com/v1/lights/${selector}/toggle`, {
-    method: 'PUT',
+    method: 'POST',
     headers: { 'Authorization': `Bearer ${token}` },
     body: JSON.stringify({ duration })
   })

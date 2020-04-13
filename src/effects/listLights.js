@@ -8,11 +8,10 @@ export default function listLights (opts) {
   const { token, status, selector } = opts
   if (!status) { return opts }
 
-  const method = 'GET'
-  const path = `https://api.lifx.com/v1/lights/${selector}`
-  const headers = { 'Authorization': `Bearer ${token}` }
-
-  return fetch(path, { method, headers })
+  return fetch(`https://api.lifx.com/v1/lights/${selector}`, {
+    method: 'GET',
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
     .then(resp => resp.json())
     .then(json => ({ type: 'listLights', json }))
     .then(msg => Promise.reject(msg))

@@ -7,7 +7,11 @@ export default function cycle (opts) {
   return fetch(`https://api.lifx.com/v1/lights/${selector}/cycle`, {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${token}` },
-    body: { states, defaults, direction: 'forward' }
+    body: JSON.stringify({
+      states,
+      defaults,
+      direction: 'forward'
+    })
   })
   .then(resp => resp.json())
   .then(json => ({ type: 'cycle', json }))

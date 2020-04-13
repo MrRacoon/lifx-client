@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch'
+
 export default function breatheEffect (opts) {
   const {
     token, selector, breathe,

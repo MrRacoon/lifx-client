@@ -27,6 +27,7 @@ const commandlineConfig = getopt.create([
   ['g', 'group=STRING', 'select bulb(s) by group name'],
   ['L', 'location=STRING', 'select bulb(s) by location name'],
   // Routines
+  ['F', 'effectOff', 'turns off any effects'],
   ['b', 'breathe', 'make the lights do a breathe effect'],
   ['p', 'pulse', 'make the lights do a pulse effect'],
   // Mods
@@ -35,7 +36,7 @@ const commandlineConfig = getopt.create([
   ['f', 'from=STRING', 'The color to start the effect from. defaults to current color (breathe, pulse)'],
   ['y', 'cycles=FLOAT', 'The number of times to repeat the effect. (breathe, pulse)'],
   ['e', 'peak=FLOAT', 'Defines where in a period the target color is at its maximum. (breathe)'],
-  // scenet
+  // scene
   ['c', 'scene=UUID', 'activate the scene via uuid'],
   ['', 'listScenes', 'show the currently known set of scenes'],
   // Utility

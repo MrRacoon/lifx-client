@@ -16,7 +16,7 @@
     "lint": "standard 'src/**/*.js' --fix",
     "build": "npm run clean; babel --out-dir=dist src",
     "test": "npm run lint && npm run build && node ./index.js -V",
-    "prepublish": "npm run lint && npm run build"
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
