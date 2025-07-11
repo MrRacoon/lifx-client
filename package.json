@@ -37,7 +37,7 @@
     "node": ">= 0.10.0"
   },
   "dependencies": {
-    "isomorphic-fetch": "^2.2.1",
+    "isomorphic-fetch": "^3.0.0",
     "node-getopt": "~0.2.3",
     "node-notifier": "^5.1.2",
     "parse-color": "~1.0.0",
